@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.DS_Store
+.vscode
+coverage
+logs
+test
+*.md
+docker-compose.yml
+.dockerignore
+.env
+.env.local
+.env.docker
+src/public/img/*

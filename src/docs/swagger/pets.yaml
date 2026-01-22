@@ -1,0 +1,234 @@
+paths:
+  /api/pets:
+    get:
+      tags:
+        - Pets
+      summary: Obtener todas las mascotas
+      description: Retorna una lista de todas las mascotas registradas en el sistema
+      responses:
+        '200':
+          description: Lista de mascotas obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pet'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Pets
+      summary: Crear una nueva mascota
+      description: Crea una nueva mascota en el sistema
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Max"
+                  description: Nombre de la mascota
+                specie:
+                  type: string
+                  example: "perro"
+                  description: Especie de la mascota
+                birthDate:
+                  type: string
+                  format: date
+                  example: "2020-01-15"
+                  description: Fecha de nacimiento de la mascota (YYYY-MM-DD)
+              required:
+                - name
+                - specie
+                - birthDate
+      responses:
+        '200':
+          description: Mascota creada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    $ref: '#/components/schemas/Pet'
+                  message:
+                    type: string
+                    example: "Pet created successfully"
+        '400':
+          description: Datos incompletos o inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/pets/withimage:
+    post:
+      tags:
+        - Pets
+      summary: Crear mascota con imagen
+      description: Crea una nueva mascota subiendo una imagen
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Luna"
+                specie:
+                  type: string
+                  example: "gato"
+                birthDate:
+                  type: string
+                  example: "2021-03-20"
+                image:
+                  type: string
+                  format: binary
+                  description: Archivo de imagen (JPG, PNG, etc.)
+      responses:
+        '200':
+          description: Mascota creada con imagen exitosamente
+        '400':
+          description: Datos incompletos o imagen no proporcionada
+        '500':
+          description: Error interno del servidor
+
+  /api/pets/{pid}:
+    get:
+      tags:
+        - Pets
+      summary: Obtener mascota por ID
+      description: Retorna la información de una mascota específica
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID de la mascota (ObjectId de MongoDB)
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+            example: '507f1f77bcf86cd799439011'
+      responses:
+        '200':
+          description: Mascota encontrada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    $ref: '#/components/schemas/Pet'
+        '400':
+          description: ID inválido o formato incorrecto
+        '404':
+          description: Mascota no encontrada
+        '500':
+          description: Error interno del servidor
+    
+    put:
+      tags:
+        - Pets
+      summary: Actualizar una mascota
+      description: Actualiza la información de una mascota existente
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID de la mascota a actualizar
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Nuevo nombre"
+                specie:
+                  type: string
+                  example: "nueva especie"
+                birthDate:
+                  type: string
+                  example: "2022-05-10"
+                adopted:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Mascota actualizada exitosamente
+        '400':
+          description: ID inválido o datos incorrectos
+        '404':
+          description: Mascota no encontrada
+        '500':
+          description: Error interno del servidor
+    
+    delete:
+      tags:
+        - Pets
+      summary: Eliminar una mascota
+      description: Elimina una mascota del sistema
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID de la mascota a eliminar
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+      responses:
+        '200':
+          description: Mascota eliminada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Pet deleted successfully"
+                  petId:
+                    type: string
+                    example: "507f1f77bcf86cd799439011"
+        '400':
+          description: ID inválido
+        '404':
+          description: Mascota no encontrada
+        '500':
+          description: Error interno del servidor

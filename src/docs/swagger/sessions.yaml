@@ -1,0 +1,190 @@
+paths:
+  /api/sessions/register:
+    post:
+      tags:
+        - Sessions
+      summary: Registrar nuevo usuario
+      description: Crea una nueva cuenta de usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: "Juan"
+                last_name:
+                  type: string
+                  example: "Pérez"
+                email:
+                  type: string
+                  format: email
+                  example: "juan@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+              required:
+                - first_name
+                - last_name
+                - email
+                - password
+      responses:
+        '200':
+          description: Usuario registrado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: string
+                    example: "507f1f77bcf86cd799439011"
+                  message:
+                    type: string
+                    example: "User registered successfully"
+        '400':
+          description: Datos incompletos o usuario ya existe
+        '500':
+          description: Error interno del servidor
+
+  /api/sessions/login:
+    post:
+      tags:
+        - Sessions
+      summary: Iniciar sesión
+      description: Autentica un usuario y establece una cookie de sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "juan@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Sesión iniciada exitosamente
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "coderCookie=token_here; Max-Age=3600; HttpOnly; Path=/"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Logged in successfully"
+                  user:
+                    $ref: '#/components/schemas/UserToken'
+        '400':
+          description: Credenciales incorrectas
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /api/sessions/current:
+    get:
+      tags:
+        - Sessions
+      summary: Obtener usuario actual
+      description: Retorna la información del usuario autenticado actualmente
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Información del usuario obtenida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    $ref: '#/components/schemas/UserToken'
+        '401':
+          description: No autenticado o token inválido
+        '500':
+          description: Error interno del servidor
+
+  /api/sessions/logout:
+    get:
+      tags:
+        - Sessions
+      summary: Cerrar sesión
+      description: Cierra la sesión del usuario actual
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Sesión cerrada exitosamente
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "coderCookie=; Max-Age=0; Path=/"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+
+  /api/sessions/unprotectedLogin:
+    post:
+      tags:
+        - Sessions
+      summary: Iniciar sesión sin protección (solo desarrollo)
+      description: Endpoint de login sin cookie firmada (para desarrollo)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login sin protección exitoso
+        '400':
+          description: Credenciales incorrectas
+
+  /api/sessions/unprotectedCurrent:
+    get:
+      tags:
+        - Sessions
+      summary: Usuario actual sin protección (solo desarrollo)
+      description: Endpoint para obtener usuario sin cookie firmada
+      responses:
+        '200':
+          description: Información obtenida
+        '401':
+          description: No autenticado

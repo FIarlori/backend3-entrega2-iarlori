@@ -4,6 +4,10 @@ import { faker } from '@faker-js/faker';
 class Mocking {
     static async generateUsers(count = 50) {
         try {
+
+            if (count < 0) {
+                throw new Error('Count cannot be negative');
+            }
             const users = [];
             const encryptedPassword = await bcrypt.hash('coder123', 10);
 
@@ -21,7 +25,7 @@ class Mocking {
                 };
                 users.push(user);
             }
-            
+
             return users;
         } catch (error) {
             throw new Error('Error generating users: ' + error.message);
@@ -29,9 +33,12 @@ class Mocking {
     }
 
     static generatePets(count = 50) {
+        if (count < 0) {
+            throw new Error('Count cannot be negative');
+        }
         const pets = [];
         const species = ['perro', 'gato', 'conejo', 'hamster', 'pájaro', 'pez', 'tortuga'];
-        
+
         for (let i = 0; i < count; i++) {
             const pet = {
                 _id: faker.database.mongodbObjectId(),
@@ -46,7 +53,7 @@ class Mocking {
             };
             pets.push(pet);
         }
-        
+
         return pets;
     }
 }

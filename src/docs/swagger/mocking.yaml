@@ -1,0 +1,171 @@
+paths:
+  /api/mocks/mockingpets:
+    get:
+      tags:
+        - Mocking
+      summary: Generar mascotas mock
+      description: Genera datos falsos de mascotas para pruebas
+      parameters:
+        - name: count
+          in: query
+          required: false
+          description: Número de mascotas a generar (máximo 1000)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+            example: 50
+      responses:
+        '200':
+          description: Mascotas mock generadas exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pet'
+                  count:
+                    type: integer
+                    example: 50
+                  environment:
+                    type: string
+                    example: "development"
+        '400':
+          description: Parámetro count inválido
+        '500':
+          description: Error interno del servidor
+
+  /api/mocks/mockingusers:
+    get:
+      tags:
+        - Mocking
+      summary: Generar usuarios mock
+      description: Genera datos falsos de usuarios para pruebas. Todos los usuarios tienen password "coder123" encriptado.
+      parameters:
+        - name: count
+          in: query
+          required: false
+          description: Número de usuarios a generar (máximo 500)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 50
+            example: 25
+      responses:
+        '200':
+          description: Usuarios mock generados exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  count:
+                    type: integer
+                    example: 25
+                  environment:
+                    type: string
+                    example: "development"
+                  note:
+                    type: string
+                    example: "All users have encrypted password 'coder123'"
+        '400':
+          description: Parámetro count inválido
+        '500':
+          description: Error interno del servidor
+
+  /api/mocks/generateData:
+    post:
+      tags:
+        - Mocking
+      summary: Generar e insertar datos en base de datos
+      description: Genera y inserta usuarios y mascotas mock en la base de datos MongoDB
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                users:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                  example: 10
+                  description: Número de usuarios a generar e insertar
+                pets:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                  example: 5
+                  description: Número de mascotas a generar e insertar
+              example:
+                users: 10
+                pets: 5
+      responses:
+        '200':
+          description: Datos generados e insertados exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Data generated and inserted successfully"
+                  environment:
+                    type: string
+                    example: "development"
+                  results:
+                    type: object
+                    properties:
+                      users:
+                        type: object
+                        properties:
+                          inserted:
+                            type: integer
+                            example: 10
+                          errors:
+                            type: array
+                            items:
+                              type: string
+                      pets:
+                        type: object
+                        properties:
+                          inserted:
+                            type: integer
+                            example: 5
+                          errors:
+                            type: array
+                            items:
+                              type: string
+                  verify:
+                    type: object
+                    properties:
+                      users:
+                        type: string
+                        example: "GET /api/users"
+                      pets:
+                        type: string
+                        example: "GET /api/pets"
+        '400':
+          description: Parámetros inválidos o sin datos para insertar
+        '500':
+          description: Error interno del servidor

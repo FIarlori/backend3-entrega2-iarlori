@@ -1,0 +1,249 @@
+paths:
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Obtener todos los usuarios
+      description: Retorna una lista de todos los usuarios registrados en el sistema. Requiere autenticación.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+  /api/users/{uid}:
+    get:
+      tags:
+        - Users
+      summary: Obtener un usuario por ID
+      description: Retorna la información de un usuario específico
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: ID del usuario (ObjectId de MongoDB)
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+            example: '507f1f77bcf86cd799439011'
+      responses:
+        '200':
+          description: Usuario encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: ID inválido o formato incorrecto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    put:
+      tags:
+        - Users
+      summary: Actualizar un usuario
+      description: Actualiza la información de un usuario existente
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: ID del usuario a actualizar
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+      requestBody:
+        required: true
+        description: Campos a actualizar del usuario
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  description: Nuevo nombre del usuario
+                last_name:
+                  type: string
+                  description: Nuevo apellido del usuario
+                email:
+                  type: string
+                  format: email
+                  description: Nuevo email del usuario
+                role:
+                  type: string
+                  enum: ['user', 'admin']
+                  description: Nuevo rol del usuario
+              example:
+                first_name: "Juan"
+                last_name: "Pérez"
+                email: "juan.perez@example.com"
+                role: "admin"
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: User updated
+        '400':
+          description: ID inválido o datos incompletos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Users
+      summary: Eliminar un usuario
+      description: Elimina un usuario del sistema
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: ID del usuario a eliminar
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+      responses:
+        '200':
+          description: Usuario eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: User deleted
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    UserResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID único del usuario
+        first_name:
+          type: string
+          description: Nombre del usuario
+        last_name:
+          type: string
+          description: Apellido del usuario
+        email:
+          type: string
+          description: Email del usuario
+        role:
+          type: string
+          description: Rol del usuario
+        pets:
+          type: array
+          items:
+            type: string
+          description: IDs de las mascotas del usuario
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        _id: "507f1f77bcf86cd799439011"
+        first_name: "Juan"
+        last_name: "Pérez"
+        email: "juan.perez@example.com"
+        role: "user"
+        pets: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+        createdAt: "2023-12-01T10:00:00Z"
+        updatedAt: "2023-12-01T10:00:00Z"

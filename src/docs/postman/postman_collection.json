@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "backend-iii-entrega-1",
-    "name": "Backend III - Entrega 1",
-    "description": "Colección completa CORREGIDA - URLs bien estructuradas",
+    "_postman_id": "backend-iii-collection",
+    "name": "Backend III ",
+    "description": "Colección completa - URLs bien estructuradas",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "name": "🎯 ENTREGA 1 - MOCKING",
+      "name": "🎯 MOCKING",
       "item": [
         {
           "name": "GET Mocking Users (50 por defecto)",
