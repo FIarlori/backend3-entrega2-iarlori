@@ -101,84 +101,104 @@ Módulos documentados:
 backend3-entrega-final/
 ├── node_modules/
 ├── src/
-│ ├── controllers/
-│ │ ├── adoptions.controller.js # Controlador de adopciones
-│ │ ├── mocks.controller.js # Controlador de mocking
-│ │ ├── pets.controller.js # Controlador de mascotas
-│ │ ├── sessions.controller.js # Controlador de sesiones
-│ │ └── users.controller.js # Controlador de usuarios
-│ ├── dao/
-│ │ ├── models/
-│ │ │ ├── Adoption.js # Modelo de adopciones
-│ │ │ ├── Pet.js # Modelo de mascotas
-│ │ │ └── User.js # Modelo de usuarios
-│ │ ├── Adoption.js # DAO de adopciones
-│ │ ├── Pets.dao.js # DAO de mascotas
-│ │ └── Users.dao.js # DAO de usuarios
-│ ├── docs/
-│ │ ├── postman/
-│ │ │ └── postman_collection.json # Colección Postman
-│ │ ├── swagger/
-│ │ │ ├── adoptions.yaml # Docs Swagger adopciones
-│ │ │ ├── mocking.yaml # Docs Swagger mocking
-│ │ │ ├── pets.yaml # Docs Swagger mascotas
-│ │ │ ├── sessions.yaml # Docs Swagger sesiones
-│ │ │ └── users.yaml # Docs Swagger usuarios
-│ │ └── swagger.js # Configuración Swagger
-│ ├── dto/
-│ │ ├── Pet.dto.js # DTO de mascotas
-│ │ └── User.dto.js # DTO de usuarios
-│ ├── public/
-│ │ └── img/
-│ │ ├── 1671549990926-coderDog.jpg
-│ │ └── 1768850601750-img.png
-│ ├── repository/
-│ │ ├── AdoptionRepository.js # Repository adopciones
-│ │ ├── GenericRepository.js # Repository genérico
-│ │ ├── PetRepository.js # Repository mascotas
-│ │ └── UserRepository.js # Repository usuarios
-│ ├── routes/
-│ │ ├── adoption.router.js # Router adopciones
-│ │ ├── mocks.router.js # Router mocking
-│ │ ├── pets.router.js # Router mascotas
-│ │ ├── sessions.router.js # Router sesiones
-│ │ └── users.router.js # Router usuarios
-│ ├── services/
-│ │ └── index.js # Servicios principales
-│ ├── utils/
-│ │ ├── index.js # Utilidades generales
-│ │ ├── mocking.js # Generación de datos mock
-│ │ └── uploader.js # Upload de archivos
-│ └── app.js # Aplicación principal
+│   ├── controllers/
+│   │   ├── adoptions.controller.js      # Controlador de adopciones
+│   │   ├── mocks.controller.js          # Controlador de mocking
+│   │   ├── pets.controller.js           # Controlador de mascotas
+│   │   ├── sessions.controller.js       # Controlador de sesiones
+│   │   └── users.controller.js          # Controlador de usuarios
+│   │
+│   ├── dao/
+│   │   ├── models/
+│   │   │   ├── Adoption.js              # Modelo de adopciones
+│   │   │   ├── Pet.js                   # Modelo de mascotas
+│   │   │   └── User.js                  # Modelo de usuarios
+│   │   ├── Adoption.dao.js              # DAO de adopciones
+│   │   ├── Pets.dao.js                  # DAO de mascotas
+│   │   └── Users.dao.js                 # DAO de usuarios
+│   │
+│   ├── docs/
+│   │   ├── postman/
+│   │   │   └── postman_collection.json  # Colección Postman
+│   │   ├── swagger/
+│   │   │   ├── adoptions.yaml           # Docs Swagger adopciones
+│   │   │   ├── mocking.yaml             # Docs Swagger mocking
+│   │   │   ├── pets.yaml                # Docs Swagger mascotas
+│   │   │   ├── sessions.yaml            # Docs Swagger sesiones
+│   │   │   └── users.yaml               # Docs Swagger usuarios
+│   │   └── swagger.js                   # Configuración Swagger
+│   │
+│   ├── dto/
+│   │   ├── Adoption.dto.js              # DTO de adopciones
+│   │   ├── Pet.dto.js                   # DTO de mascotas
+│   │   └── User.dto.js                  # DTO de usuarios
+│   │
+│   ├── logs/
+│   │
+│   ├── middlewares/
+│   │   ├── auth.middleware.js           # Middleware de autenticación
+│   │   └── logger.middleware.js         # Middleware de logging
+│   │
+│   ├── public/
+│   │   ├── documents/                   # Documentos públicos
+│   │   ├── img/
+│   │   │   ├── pets/                    # Imágenes de mascotas
+│   │   │   ├── profiles/                # Imágenes de perfiles
+│   │   │   └── 1671549990926-coderDog.jpg
+│   │   └── temp/                        # Archivos temporales
+│   │
+│   ├── repository/
+│   │   ├── AdoptionRepository.js        # Repository adopciones
+│   │   ├── GenericRepository.js         # Repository genérico
+│   │   ├── PetRepository.js             # Repository mascotas
+│   │   └── UserRepository.js            # Repository usuarios
+│   │
+│   ├── routes/
+│   │   ├── adoption.router.js           # Router adopciones
+│   │   ├── mocks.router.js              # Router mocking
+│   │   ├── pets.router.js               # Router mascotas
+│   │   ├── sessions.router.js           # Router sesiones
+│   │   └── users.router.js              # Router usuarios
+│   │
+│   ├── services/
+│   │   └── index.js                     # Servicios principales
+│   │
+│   ├── utils/
+│   │   ├── index.js                     # Utilidades generales
+│   │   ├── logger.js                    # Configuración de logger
+│   │   ├── mocking.js                   # Generación de datos mock
+│   │   └── uploader.js                  # Upload de archivos
+│   │
+│   └── app.js                           # Aplicación principal
+│
 ├── test/
-│ ├── adoptions/
-│ │ ├── adoptions.test.js # Tests funcionales adopciones
-│ │ └── adoptions-integration.test.js
-│ ├── mocks/
-│ │ ├── mocking.test.js # Tests mocking
-│ │ └── generate-data.test.js
-│ ├── pets/
-│ │ ├── pets.test.js # Tests mascotas
-│ │ └── pets-image.test.js
-│ ├── sessions/
-│ │ ├── auth.test.js # Tests autenticación
-│ │ └── sessions.test.js
-│ ├── users/
-│ │ └── users.test.js # Tests usuarios
-│ ├── utils/
-│ │ └── mocking.test.js # Tests utils mocking
-│ ├── adoptions-real.test.js # Tests legacy adopciones
-│ ├── adoptions-simple.test.js # Tests simples adopciones
-│ └── simple.test.js # Tests generales
+│   ├── adoptions/
+│   │   └── adoptions.test.js            # Tests adopciones
+│   ├── mocks/
+│   │   └── mocking.test.js              # Tests mocking
+│   ├── pets/
+│   │   └── pets.test.js                 # Tests mascotas
+│   ├── sessions/
+│   │   └── auth.test.js                 # Tests autenticación
+│   ├── users/
+│   │   └── users.test.js                # Tests usuarios
+│   ├── utils/
+│   │   ├── bcrypt-dto.test.js           # Tests bcrypt / DTO
+│   │   └── mocking.test.js              # Tests utils mocking
+│   ├── setup.js                         # Setup de testing
+│   └── test-app.js                      # App de testing
+│
 ├── .dockerignore
 ├── .env
+├── .env.docker
 ├── .env.sample
 ├── .gitignore
-├── Dockerfile
 ├── docker-compose.yml
+├── Dockerfile
 ├── package.json
 ├── package-lock.json
 └── README.md
+
 ```
 
 ---

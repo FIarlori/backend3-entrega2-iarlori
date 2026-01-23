@@ -1,5 +1,6 @@
 import { adoptionsService, petsService, usersService } from "../services/index.js";
 import logger from '../utils/logger.js';
+import AdoptionDTO from '../dto/Adoption.dto.js'; // NUEVO
 
 const getAllAdoptions = async (req, res) => {
     try {
@@ -76,7 +77,6 @@ const createAdoption = async (req, res) => {
 
         logger.info(`Creating adoption: user=${uid}, pet=${pid}`);
 
-
         const user = await usersService.getUserById(uid);
         if (!user) {
             logger.warn(`User not found for adoption: ${uid}`);
@@ -87,7 +87,6 @@ const createAdoption = async (req, res) => {
                 suggestion: "Check available users at: GET /api/users"
             });
         }
-
 
         const pet = await petsService.getBy({ _id: pid });
         if (!pet) {
@@ -124,35 +123,22 @@ const createAdoption = async (req, res) => {
         });
         logger.debug(`Pet ${pet.name} marked as adopted by ${user.email}`);
 
-        const adoption = await adoptionsService.create({
+        const adoptionData = AdoptionDTO.getAdoptionInputFrom({
             owner: user._id,
             pet: pet._id
         });
+        
+        const adoption = await adoptionsService.create(adoptionData);
         logger.debug(`Adoption record created: ${adoption._id}`);
+
+        const adoptionOutput = AdoptionDTO.getAdoptionOutputFrom(adoption, user, pet);
 
         logger.info(`Adoption successful: ${user.email} adopted ${pet.name}`);
 
         res.send({
             status: "success",
             message: "Pet adopted successfully",
-            adoption: {
-                id: adoption._id,
-                timestamp: adoption.createdAt || new Date().toISOString(),
-                user: {
-                    id: user._id,
-                    name: `${user.first_name} ${user.last_name}`,
-                    email: user.email,
-                    total_pets: user.pets.length
-                },
-                pet: {
-                    id: pet._id,
-                    name: pet.name,
-                    specie: pet.specie,
-                    birthDate: pet.birthDate,
-                    adopted: true,
-                    owner: user._id
-                }
-            },
+            adoption: adoptionOutput, 
             links: {
                 user: `/api/users/${user._id}`,
                 pet: `/api/pets/${pet._id}`,
