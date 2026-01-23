@@ -244,53 +244,54 @@ JWT_EXPIRES_IN=1h
 ### 🔐 SESSIONS (`/api/sessions`)
 | Método | Endpoint | Descripción | Auth |
 |--------|----------|-------------|------|
-| POST | `/register` | Registrar nuevo usuario | ❌ |
-| POST | `/login` | Iniciar sesión (cookie firmada) | ❌ |
-| GET | `/current` | Usuario actual autenticado | ✅ |
-| GET | `/logout` | Cerrar sesión | ✅ |
-| POST | `/unprotectedLogin` | Login sin protección (testing) | ❌ |
-| GET | `/unprotectedCurrent` | Usuario sin protección (testing) | ❌ |
+| POST | `/register` | Registrar nuevo usuario | ❌ No |
+| POST | `/login` | Iniciar sesión (cookie firmada) | ❌ No |
+| GET | `/current` | Usuario actual autenticado | ✅ Sí |
+| GET | `/logout` | Cerrar sesión | ✅ Sí |
+| POST | `/unprotectedLogin` | Login sin protección (testing) | ❌ No |
+| GET | `/unprotectedCurrent` | Usuario sin protección (testing) | ❌ No |
 
 ### 👥 USERS (`/api/users`)
 | Método | Endpoint | Descripción | Auth |
 |--------|----------|-------------|------|
-| GET | `/` | Listar todos los usuarios | ✅ |
-| GET | `/:uid` | Obtener usuario por ID | ✅ |
-| PUT | `/:uid` | Actualizar usuario | ✅ |
-| DELETE | `/:uid` | Eliminar usuario | ✅ |
-| POST | `/:uid/documents` | Subir documentos de usuario | ✅ |
+| GET | `/` | Listar todos los usuarios | ❌ No |
+| GET | `/:uid` | Obtener usuario por ID | ❌ No |
+| PUT | `/:uid` | Actualizar usuario | ❌ No |
+| DELETE | `/:uid` | Eliminar usuario | ❌ No |
+| POST | `/:uid/documents` | Subir documentos de usuario | ✅ Sí |
 
 ### 🐾 PETS (`/api/pets`)
 | Método | Endpoint | Descripción | Auth |
 |--------|----------|-------------|------|
-| GET | `/` | Listar todas las mascotas | ❌ |
-| POST | `/` | Crear nueva mascota | ✅ |
-| GET | `/:pid` | Obtener mascota por ID | ❌ |
-| PUT | `/:pid` | Actualizar mascota | ✅ |
-| DELETE | `/:pid` | Eliminar mascota | ✅ |
-| POST | `/withimage` | Crear mascota con imagen | ✅ |
+| GET | `/` | Listar todas las mascotas | ❌ No |
+| POST | `/` | Crear nueva mascota | ✅ Sí |
+| GET | `/:pid` | Obtener mascota por ID | ❌ No |
+| PUT | `/:pid` | Actualizar mascota | ✅ Sí |
+| DELETE | `/:pid` | Eliminar mascota | ✅ Sí |
+| POST | `/withimage` | Crear mascota con imagen | ✅ Sí |
 
 ### 🏠 ADOPTIONS (`/api/adoptions`)
 | Método | Endpoint | Descripción | Auth |
 |--------|----------|-------------|------|
-| GET | `/` | Listar todas las adopciones | ✅ |
-| GET | `/:aid` | Obtener adopción por ID | ✅ |
-| POST | `/:uid/:pid` | Crear nueva adopción | ✅ |
+| GET | `/` | Listar todas las adopciones | ✅ Sí |
+| GET | `/:aid` | Obtener adopción por ID | ✅ Sí |
+| POST | `/:uid/:pid` | Crear nueva adopción | ✅ Sí |
 
 ### 🧪 MOCKING (`/api/mocks`)
 | Método | Endpoint | Descripción | Auth |
 |--------|----------|-------------|------|
-| GET | `/mockingusers` | Generar usuarios mock | ❌ |
-| GET | `/mockingpets` | Generar mascotas mock | ❌ |
-| POST | `/generateData` | Insertar datos mock en DB | ❌ |
+| GET | `/mockingusers` | Generar usuarios mock | ❌ No |
+| GET | `/mockingpets` | Generar mascotas mock | ❌ No |
+| POST | `/generateData` | Insertar datos mock en DB | ❌ No |
 
 ### 📊 SYSTEM (`/`)
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/` | Página principal con información |
-| GET | `/api-docs` | Documentación Swagger UI |
-| GET | `/health` | Health check del sistema |
-| GET | `/api-docs-json` | Especificación OpenAPI JSON |
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/` | Página principal con información | ❌ No |
+| GET | `/api-docs` | Documentación Swagger UI | ❌ No |
+| GET | `/health` | Health check del sistema | ❌ No |
+| GET | `/api-docs-json` | Especificación OpenAPI JSON | ❌ No |
+
 
 ```
 
@@ -329,13 +330,10 @@ Todos los errores incluyen formato JSON estandarizado.
 npm test
 
 # Tests específicos
-npm run test:simple          # Tests básicos
 npm run test:adoptions       # Tests del módulo de adopciones
 npm run test:all             # Todos los tests
-npm run test:watch           # Modo watch para desarrollo
 
-# Linting
-npm run lint
+
 
 ```
 
@@ -350,38 +348,93 @@ Cobertura de tests:
 
 ## Instrucciones para usar la colección:
 
-Flujo recomendado para test de endpoints:
-Configurar entorno:
 
-Importar colección
+📱 POSTMAN COLLECTION - Instrucciones de Uso con Autenticación
+Configuración Inicial:
+Importar colección: src/docs/postman/postman_collection.json
 
-Crear entorno con variables
+Crear entorno con variables:
 
-Setear base_url a http://localhost:8080
+base_url: http://localhost:8080
 
-Pruebas (Mocking):
+auth_token: (se autocompletará después del login)
 
-GET Mocking Users - Verificar 50 usuarios
-GET Mocking Pets - Verificar 100 mascotas
-POST Generate & Insert Data - Insertar datos reales
+user_id: (ID de usuario para pruebas)
 
-Obtener IDs para pruebas:
+pet_id: (ID de mascota para pruebas)
 
-GET All Users - Copiar un _id → Pegar en variable user_id
-GET All Pets - Copiar un _id → Pegar en variable pet_id
+Flujo Recomendado para Testing:
+FASE 1: Endpoints SIN Autenticación (No Auth)
+Estos endpoints NO requieren cookie de autenticación:
 
-Probar endpoints con IDs:
+# 1. Generar datos mock (opcional para pruebas)
+GET {{base_url}}/api/mocks/mockingusers?count=5
+GET {{base_url}}/api/mocks/mockingpets?count=3
+POST {{base_url}}/api/mocks/generateData
+Body: { "users": 2, "pets": 2 }
 
-GET User by ID (usar variable user_id)
-GET Adoption by ID (si existe)
-POST Create Adoption (usar user_id y pet_id)
+# 2. Probar endpoints públicos
+GET {{base_url}}/api/users                # Listar usuarios
+GET {{base_url}}/api/pets                 # Listar mascotas
+GET {{base_url}}/api-docs                 # Documentación Swagger
+GET {{base_url}}/health                   # Health check
 
-Autenticación:
+# 3. Registrar usuario (prepara para autenticación)
+POST {{base_url}}/api/sessions/register
+Body: {
+  "first_name": "Test",
+  "last_name": "User",
+  "email": "test@example.com",
+  "password": "password123"
+}
+# ⚡ GUARDAR el `_id` del usuario en variable `user_id`
 
-POST Register - Crear usuario
-POST Login - Iniciar sesión
-GET Current - Ver usuario actual
-GET Logout - Cerrar sesión
+FASE 2: Autenticación - Obtener Token
+
+# 4. Iniciar sesión (obtiene cookie)
+POST {{base_url}}/api/sessions/login
+Body: {
+  "email": "test@example.com",
+  "password": "password123"
+}
+# ✅ La respuesta establece automáticamente la cookie `coderCookie`
+# ⚡ Postman maneja las cookies automáticamente para siguientes requests
+
+FASE 3: Endpoints CON Autenticación (Requiere Auth)
+
+# 5. Usuario autenticado
+GET {{base_url}}/api/sessions/current     # Usuario actual
+GET {{base_url}}/api/sessions/logout      # Cerrar sesión
+
+# 6. Crear mascota (requiere auth)
+POST {{base_url}}/api/pets
+Body: {
+  "name": "Mascota Test",
+  "specie": "perro",
+  "birthDate": "2020-01-15"
+}
+# ⚡ GUARDAR el `_id` de la mascota en variable `pet_id`
+
+# 7. Operaciones con mascotas (requieren auth)
+PUT {{base_url}}/api/pets/{{pet_id}}
+DELETE {{base_url}}/api/pets/{{pet_id}}
+
+# 8. Crear adopción (requiere auth)
+POST {{base_url}}/api/adoptions/{{user_id}}/{{pet_id}}
+
+# 9. Ver adopciones (requiere auth)
+GET {{base_url}}/api/adoptions
+GET {{base_url}}/api/adoptions/{{adoption_id}}
+
+# 10. Subir documentos de usuario (requiere auth)
+POST {{base_url}}/api/users/{{user_id}}/documents
+Form-data: documents[] = (seleccionar archivo)
+
+FASE 4: Testing sin Cookies Firmadas (Endpoints de Testing)
+
+# Para desarrollo/testing (no usar en producción)
+POST {{base_url}}/api/sessions/unprotectedLogin
+GET {{base_url}}/api/sessions/unprotectedCurrent
 
 ---
 

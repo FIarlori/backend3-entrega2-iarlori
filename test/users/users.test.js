@@ -1,18 +1,14 @@
 import { expect } from 'chai';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
 import request from 'supertest';
 import app from '../../src/app.js';
+import { startTestDB, stopTestDB } from '../setup.js';
 
 describe('👥 TESTS COMPLETOS - MÓDULO USERS', () => {
-    let mongoServer;
     let testUserId;
     let testUser2Id;
 
     before(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
+        await startTestDB();
 
         const user1Res = await request(app)
             .post('/api/sessions/register')
@@ -38,8 +34,7 @@ describe('👥 TESTS COMPLETOS - MÓDULO USERS', () => {
     });
 
     after(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
+        await stopTestDB();
     });
 
     describe('GET /api/users', () => {

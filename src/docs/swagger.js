@@ -183,7 +183,13 @@ const swaggerOptions = {
                     type: 'apiKey',
                     in: 'cookie',
                     name: 'coderCookie',
-                    description: 'Autenticación basada en cookies JWT firmadas'
+                    description: 'Autenticación mediante cookie JWT firmada. Para usar: 1. Ejecuta POST /api/sessions/login primero 2. Copia la cookie "coderCookie" de la respuesta 3. Pégala en el campo de autorización'
+                },
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description: 'Token JWT (alternativa si prefieres usar Authorization header)'
                 }
             }
         },

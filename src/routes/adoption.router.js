@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import adoptionsController from '../controllers/adoptions.controller.js';
 import logger from '../utils/logger.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -133,11 +134,10 @@ const validateAdoptionCreation = (req, res, next) => {
 
 router.use(adoptionLogger);
 
-router.get('/', adoptionsController.getAllAdoptions);
-router.get('/:aid', adoptionsController.getAdoption);
-
-router.post('/', validateAdoptionCreation);
-router.post('/:uid', validateAdoptionCreation);
-router.post('/:uid/:pid', validateAdoptionCreation, adoptionsController.createAdoption);
+router.get('/', authMiddleware, adoptionsController.getAllAdoptions);
+router.get('/:aid', authMiddleware, adoptionsController.getAdoption);
+router.post('/:uid/:pid', authMiddleware, validateAdoptionCreation, adoptionsController.createAdoption);
+router.post('/', authMiddleware, validateAdoptionCreation);
+router.post('/:uid', authMiddleware, validateAdoptionCreation);
 
 export default router;

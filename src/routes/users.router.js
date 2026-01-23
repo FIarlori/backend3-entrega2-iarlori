@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import usersController from '../controllers/users.controller.js';
 import { documentsUpload } from '../utils/uploader.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -9,6 +10,7 @@ router.get('/:uid', usersController.getUser);
 router.put('/:uid', usersController.updateUser);
 router.delete('/:uid', usersController.deleteUser);
 router.post('/:uid/documents',
+    authMiddleware,
     documentsUpload.array('documents', 10),
     usersController.uploadDocuments
 );

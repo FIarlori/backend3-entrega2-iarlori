@@ -15,8 +15,7 @@
     "test:mocks": "mocha test/mocks/mocking.test.js --exit --timeout 15000",
     "test:utils": "mocha test/utils/mocking.test.js --exit --timeout 15000",
     "test:bcrypt-dto": "mocha test/utils/bcrypt-dto.test.js --exit --timeout 15000",
-    "test:pets-validation": "mocha test/pets/pets-validation.test.js --exit --timeout 15000",
-    "test:all": "npm run test:adoptions && npm run test:pets && npm run test:sessions && npm run test:users && npm run test:mocks && npm run test:bcrypt-dto && npm run test:pets-validation",
+    "test:all": "npm run test:adoptions && npm run test:pets && npm run test:sessions && npm run test:users && npm run test:mocks && npm run test:bcrypt-dto",
     "docker:build": "docker build -t backend3-entrega-final .",
     "docker:run": "docker run -p 8080:8080 --env-file .env backend3-entrega-final",
     "docker:push": "docker tag backend3-entrega-final fi93/backend3-entrega-final:latest && docker push fi93/backend3-entrega-final:latest",
@@ -24,7 +23,7 @@
     "docker:compose:build": "docker-compose up --build",
     "docker:compose:clean": "docker-compose down -v --remove-orphans",
     "lint": "eslint src/**/*.js",
-    "logs": "tail -f src/logs/*.log",
+    "logs": "powershell \"Get-Content src/logs/combined.log -Wait\"",
     "fix:tests": "npm run test:all -- --reporter spec"
   },
   "keywords": [

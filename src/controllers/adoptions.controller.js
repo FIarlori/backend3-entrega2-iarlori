@@ -1,6 +1,6 @@
 import { adoptionsService, petsService, usersService } from "../services/index.js";
 import logger from '../utils/logger.js';
-import AdoptionDTO from '../dto/Adoption.dto.js'; // NUEVO
+import AdoptionDTO from '../dto/Adoption.dto.js';
 
 const getAllAdoptions = async (req, res) => {
     try {

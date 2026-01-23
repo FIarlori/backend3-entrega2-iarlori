@@ -12,22 +12,29 @@ export const startTestDB = async () => {
     const mongoUri = mongoServer.getUri();
 
     await mongoose.connect(mongoUri);
-    console.log('✅ Test MongoDB connected');
+
+    console.log('✅ Test MongoDB connected:', mongoUri);
 
     return mongoUri;
 };
 
 export const stopTestDB = async () => {
-    await mongoose.disconnect();
+    if (mongoose.connection.readyState !== 0) {
+        await mongoose.disconnect();
+    }
+
     if (mongoServer) {
         await mongoServer.stop();
     }
+
     console.log('✅ Test MongoDB stopped');
 };
 
 export const clearCollections = async () => {
-    const collections = mongoose.connection.collections;
-    for (const key in collections) {
-        await collections[key].deleteMany({});
+    if (mongoose.connection.readyState === 1) {
+        const collections = mongoose.connection.collections;
+        for (const key in collections) {
+            await collections[key].deleteMany({});
+        }
     }
 };

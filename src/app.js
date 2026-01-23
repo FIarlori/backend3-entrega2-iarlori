@@ -33,9 +33,23 @@ app.use(loggerMiddleware);
 app.use('/public', express.static('src/public'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    explorer: true,
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: "Backend III API Documentation"
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: "Backend III API Documentation",
+  swaggerOptions: {
+    persistAuthorization: true, 
+    authAction: {
+      cookieAuth: {
+        name: "cookieAuth",
+        schema: {
+          type: "apiKey",
+          in: "cookie",
+          name: "coderCookie"
+        },
+        value: "Pega aquí el valor de la cookie después de hacer login"
+      }
+    }
+  }
 }));
 
 mongoose.connect(MONGO_URL, {
@@ -358,7 +372,7 @@ app.get('/', (req, res) => {
                         Entorno: ${NODE_ENV}
                     </div>
                     <div class="status-badge">
-                        Total Endpoints: 22
+                        Total Endpoints: 28 (14 Auth / 14 No Auth)
                     </div>
                 </header>
                 
@@ -395,7 +409,7 @@ app.get('/', (req, res) => {
                                     <span class="method get">GET</span>
                                     <a href="/api/users" target="_blank">/api/users</a>
                                 </div>
-                                <span class="auth-badge">Auth</span>
+                                <span class="noauth-badge">No Auth</span>
                             </div>
                             <span class="description">Listar todos los usuarios registrados</span>
                         </div>
@@ -405,7 +419,7 @@ app.get('/', (req, res) => {
                                     <span class="method get">GET</span>
                                     /api/users/:uid
                                 </div>
-                                <span class="auth-badge">Auth</span>
+                                <span class="noauth-badge">No Auth</span>
                             </div>
                             <span class="description">Obtener usuario específico por ID</span>
                         </div>
@@ -415,7 +429,7 @@ app.get('/', (req, res) => {
                                     <span class="method put">PUT</span>
                                     /api/users/:uid
                                 </div>
-                                <span class="auth-badge">Auth</span>
+                                <span class="noauth-badge">No Auth</span>
                             </div>
                             <span class="description">Actualizar información de usuario</span>
                         </div>
@@ -425,7 +439,7 @@ app.get('/', (req, res) => {
                                     <span class="method delete">DELETE</span>
                                     /api/users/:uid
                                 </div>
-                                <span class="auth-badge">Auth</span>
+                                <span class="noauth-badge">No Auth</span>
                             </div>
                             <span class="description">Eliminar usuario del sistema</span>
                         </div>
@@ -667,8 +681,6 @@ app.get('/', (req, res) => {
                             <li>🔧 Utils: <code>npm run test:utils</code></li>
                             <li>🔑 Bcrypt/DTO: <code>npm run test:bcrypt-dto</code></li>
                             <li>✅ Todos los tests: <code>npm run test:all</code></li>
-                            <li>👁️ Watch mode: <code>npm run test:watch</code></li>
-                            <li>🔍 Linting: <code>npm run lint</code></li>
                             <li>📈 Ver logs: <code>npm run logs</code></li>
                         </ul>
                     </div>
@@ -680,7 +692,7 @@ app.get('/', (req, res) => {
                     
                     <div class="stats">
                         <div class="stat">
-                            <span class="stat-number">22</span>
+                            <span class="stat-number">28</span>
                             <span class="stat-label">Endpoints</span>
                         </div>
                         <div class="stat">
@@ -804,41 +816,43 @@ app.use('*', (req, res) => {
             },
             api_modules: {
                 users: {
-                    getAll: 'GET /api/users',
-                    getById: 'GET /api/users/:uid',
-                    update: 'PUT /api/users/:uid',
-                    delete: 'DELETE /api/users/:uid',
-                    uploadDocuments: 'POST /api/users/:uid/documents'
+                    getAll: 'GET /api/users (No Auth)',
+                    getById: 'GET /api/users/:uid (No Auth)',
+                    update: 'PUT /api/users/:uid (No Auth)',
+                    delete: 'DELETE /api/users/:uid (No Auth)',
+                    uploadDocuments: 'POST /api/users/:uid/documents (Auth Required)'
                 },
                 pets: {
-                    getAll: 'GET /api/pets',
-                    create: 'POST /api/pets',
-                    getById: 'GET /api/pets/:pid',
-                    update: 'PUT /api/pets/:pid',
-                    delete: 'DELETE /api/pets/:pid',
-                    createWithImage: 'POST /api/pets/withimage'
+                    getAll: 'GET /api/pets (No Auth)',
+                    create: 'POST /api/pets (Auth Required)',
+                    getById: 'GET /api/pets/:pid (No Auth)',
+                    update: 'PUT /api/pets/:pid (Auth Required)',
+                    delete: 'DELETE /api/pets/:pid (Auth Required)',
+                    createWithImage: 'POST /api/pets/withimage (Auth Required)'
                 },
                 adoptions: {
-                    getAll: 'GET /api/adoptions',
-                    getById: 'GET /api/adoptions/:aid',
-                    create: 'POST /api/adoptions/:uid/:pid'
+                    getAll: 'GET /api/adoptions (Auth Required)',
+                    getById: 'GET /api/adoptions/:aid (Auth Required)',
+                    create: 'POST /api/adoptions/:uid/:pid (Auth Required)'
                 },
                 sessions: {
-                    register: 'POST /api/sessions/register',
-                    login: 'POST /api/sessions/login',
-                    current: 'GET /api/sessions/current',
-                    logout: 'GET /api/sessions/logout',
-                    unprotectedLogin: 'POST /api/sessions/unprotectedLogin',
-                    unprotectedCurrent: 'GET /api/sessions/unprotectedCurrent'
+                    register: 'POST /api/sessions/register (No Auth)',
+                    login: 'POST /api/sessions/login (No Auth)',
+                    current: 'GET /api/sessions/current (Auth Required)',
+                    logout: 'GET /api/sessions/logout (Auth Required)',
+                    unprotectedLogin: 'POST /api/sessions/unprotectedLogin (No Auth)',
+                    unprotectedCurrent: 'GET /api/sessions/unprotectedCurrent (No Auth)'
                 },
                 mocking: {
-                    mockUsers: 'GET /api/mocks/mockingusers',
-                    mockPets: 'GET /api/mocks/mockingpets',
-                    generateData: 'POST /api/mocks/generateData'
+                    mockUsers: 'GET /api/mocks/mockingusers (No Auth)',
+                    mockPets: 'GET /api/mocks/mockingpets (No Auth)',
+                    generateData: 'POST /api/mocks/generateData (No Auth)'
                 }
             }
         },
         total_endpoints: 22,
+        auth_endpoints: 10,
+        no_auth_endpoints: 12,
         quick_links: {
             home: '/',
             documentation: '/api-docs',
@@ -853,7 +867,6 @@ const server = app.listen(PORT, () => {
 ║                                                                       ║
 ║   🚀 Backend III - Entrega Final                                     ║
 ║   📁 Entorno: ${NODE_ENV}${NODE_ENV === 'development' ? '        ' : '         '}                          ║
-║   🔗 MongoDB: ${mongoose.connection.readyState === 1 ? '✅ Conectado' : '❌ Desconectado'}                      ║
 ║                                                                       ║
 ╠═══════════════════════════════════════════════════════════════════════╣
 ║                                                                       ║
