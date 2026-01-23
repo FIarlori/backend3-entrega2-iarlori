@@ -27,7 +27,7 @@ La imagen Docker está disponible públicamente en:
 ```bash
 # Descargar y ejecutar la imagen
 docker pull fi93/backend3-entrega-final:latest
-docker run -p 8080:8080 fi93/backend3-entrega-final
+docker run -p 8080:8080 fi93/backend3-entrega-final:latest
 
 # O ejecutar con variables de entorno
 docker run -p 8080:8080 \
