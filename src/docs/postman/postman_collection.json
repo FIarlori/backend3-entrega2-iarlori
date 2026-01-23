@@ -1,29 +1,19 @@
 {
   "info": {
-    "_postman_id": "backend-iii-collection",
-    "name": "Backend III ",
-    "description": "Colección completa - URLs bien estructuradas",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "backend-iii-completo",
+    "name": "Backend III - Entrega Final",
+    "description": "Colección completa con todos los endpoints implementados para la entrega final. Incluye: usuarios, mascotas, adopciones, sesiones, mocking, documentos y más.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    }
   },
   "item": [
     {
-      "name": "🏠 HEALTH CHECK",
+      "name": "🏠 HEALTH & DOCS",
       "item": [
-        {
-          "name": "GET Health Check",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/health",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["health"]
-            },
-            "description": "Verifica estado del servidor y conexión a MongoDB"
-          }
-        },
         {
           "name": "GET Home",
           "request": {
@@ -31,93 +21,62 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": [""]
             },
-            "description": "Página principal con información de endpoints"
-          }
+            "description": "Página principal con interfaz web y navegación"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Verifica estado del servidor, MongoDB y métricas del sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Swagger UI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api-docs",
+              "host": ["{{base_url}}"],
+              "path": ["api-docs"]
+            },
+            "description": "Documentación interactiva completa de la API (Swagger UI)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Swagger JSON",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api-docs-json",
+              "host": ["{{base_url}}"],
+              "path": ["api-docs-json"]
+            },
+            "description": "Especificación OpenAPI en formato JSON"
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "🎯 MOCKING",
+      "name": "🔐 SESSIONS - AUTENTICACIÓN",
       "item": [
         {
-          "name": "GET Mocking Users (50 por defecto)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/mocks/mockingusers",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "mocks", "mockingusers"]
-            },
-            "description": "Genera 50 usuarios mock con contraseña 'coder123' encriptada"
-          }
-        },
-        {
-          "name": "GET Mocking Users (con parámetro)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/mocks/mockingusers?count=10",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "mocks", "mockingusers"],
-              "query": [
-                {
-                  "key": "count",
-                  "value": "10"
-                }
-              ]
-            },
-            "description": "Genera N usuarios mock (ej: 10)"
-          }
-        },
-        {
-          "name": "GET Mocking Pets (100 por defecto)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/mocks/mockingpets",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "mocks", "mockingpets"]
-            },
-            "description": "Genera 100 mascotas mock"
-          }
-        },
-        {
-          "name": "GET Mocking Pets (con parámetro)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/mocks/mockingpets?count=5",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "mocks", "mockingpets"],
-              "query": [
-                {
-                  "key": "count",
-                  "value": "5"
-                }
-              ]
-            },
-            "description": "Genera N mascotas mock (ej: 5)"
-          }
-        },
-        {
-          "name": "POST Generate & Insert Data",
+          "name": "POST Register",
           "request": {
             "method": "POST",
             "header": [
@@ -128,7 +87,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"users\": 3,\n  \"pets\": 2\n}",
+              "raw": "{\n  \"first_name\": \"Juan\",\n  \"last_name\": \"Pérez\",\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"password123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -136,19 +95,116 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/api/mocks/generateData",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "mocks", "generateData"]
+              "raw": "{{base_url}}/api/sessions/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sessions", "register"]
             },
-            "description": "Inserta usuarios y mascotas mock en la base de datos"
-          }
+            "description": "Registra un nuevo usuario en el sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sessions/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sessions", "login"]
+            },
+            "description": "Inicia sesión y establece cookie de autenticación"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sessions/current",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sessions", "current"]
+            },
+            "description": "Obtiene información del usuario autenticado actualmente"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Logout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sessions/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sessions", "logout"]
+            },
+            "description": "Cierra sesión y elimina la cookie de autenticación"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Unprotected Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sessions/unprotectedLogin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sessions", "unprotectedLogin"]
+            },
+            "description": "Login sin cookie firmada (para desarrollo/testing). Actualiza last_connection."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Unprotected Current",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sessions/unprotectedCurrent",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sessions", "unprotectedCurrent"]
+            },
+            "description": "Obtiene usuario actual sin cookie firmada (para desarrollo/testing)"
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "👥 USERS",
+      "name": "👥 USERS - GESTIÓN DE USUARIOS",
       "item": [
         {
           "name": "GET All Users",
@@ -157,13 +213,12 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/users",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "users"]
             },
-            "description": "Lista todos los usuarios (para verificar inserción de mocks)"
-          }
+            "description": "Lista todos los usuarios registrados en el sistema"
+          },
+          "response": []
         },
         {
           "name": "GET User by ID",
@@ -172,19 +227,18 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/users/{{user_id}}",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "users", "{{user_id}}"],
               "variable": [
                 {
                   "key": "user_id",
-                  "value": ""
+                  "value": "647a1b2c3d4e5f6789012345"
                 }
               ]
             },
-            "description": "Obtiene un usuario específico por ID. Usar ID real obtenido de GET All Users"
-          }
+            "description": "Obtiene un usuario específico por su ID. Los passwords no se incluyen en la respuesta."
+          },
+          "response": []
         },
         {
           "name": "PUT Update User",
@@ -198,7 +252,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"first_name\": \"Nombre Actualizado\",\n  \"last_name\": \"Apellido Actualizado\"\n}",
+              "raw": "{\n  \"first_name\": \"Juan Carlos\",\n  \"last_name\": \"Pérez González\",\n  \"role\": \"premium\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -207,19 +261,18 @@
             },
             "url": {
               "raw": "{{base_url}}/api/users/{{user_id}}",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "users", "{{user_id}}"],
               "variable": [
                 {
                   "key": "user_id",
-                  "value": ""
+                  "value": "647a1b2c3d4e5f6789012345"
                 }
               ]
             },
-            "description": "Actualiza un usuario existente"
-          }
+            "description": "Actualiza la información de un usuario existente"
+          },
+          "response": []
         },
         {
           "name": "DELETE User",
@@ -228,24 +281,65 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/users/{{user_id}}",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "users", "{{user_id}}"],
               "variable": [
                 {
                   "key": "user_id",
-                  "value": ""
+                  "value": "647a1b2c3d4e5f6789012345"
                 }
               ]
             },
-            "description": "Elimina un usuario (usar con cuidado)"
-          }
+            "description": "Elimina un usuario del sistema permanentemente"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Upload Documents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "documents",
+                  "type": "file",
+                  "src": [],
+                  "description": "Archivo de documento (PDF, DOC, DOCX, TXT, RTF, ODT o imágenes)"
+                },
+                {
+                  "key": "documents",
+                  "type": "file",
+                  "src": [],
+                  "description": "Segundo documento (máximo 10 archivos)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/{{user_id}}/documents",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "{{user_id}}", "documents"],
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": "647a1b2c3d4e5f6789012345"
+                }
+              ]
+            },
+            "description": "Sube uno o múltiples documentos para un usuario. Se guardan en /public/documents/ y se actualiza el array documents del usuario."
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "🐾 PETS",
+      "name": "🐾 PETS - GESTIÓN DE MASCOTAS",
       "item": [
         {
           "name": "GET All Pets",
@@ -254,13 +348,32 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/pets",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "pets"]
             },
-            "description": "Lista todas las mascotas (para verificar inserción de mocks)"
-          }
+            "description": "Lista todas las mascotas registradas en el sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Pet by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pets/{{pet_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pets", "{{pet_id}}"],
+              "variable": [
+                {
+                  "key": "pet_id",
+                  "value": "647b2c3d4e5f678901234567"
+                }
+              ]
+            },
+            "description": "Obtiene una mascota específica por su ID"
+          },
+          "response": []
         },
         {
           "name": "POST Create Pet",
@@ -283,13 +396,60 @@
             },
             "url": {
               "raw": "{{base_url}}/api/pets",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "pets"]
             },
-            "description": "Crea una nueva mascota"
-          }
+            "description": "Crea una nueva mascota. Por defecto, adopted: false"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Pet with Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Luna",
+                  "type": "text",
+                  "description": "Nombre de la mascota"
+                },
+                {
+                  "key": "specie",
+                  "value": "gato",
+                  "type": "text",
+                  "description": "Especie de la mascota"
+                },
+                {
+                  "key": "birthDate",
+                  "value": "2021-03-20",
+                  "type": "text",
+                  "description": "Fecha de nacimiento (YYYY-MM-DD)"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "Imagen de la mascota (JPG, PNG, GIF, WEBP)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pets/withimage",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pets", "withimage"]
+            },
+            "description": "Crea una mascota subiendo una imagen. Se guarda en /public/img/pets/"
+          },
+          "response": []
         },
         {
           "name": "PUT Update Pet",
@@ -303,7 +463,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Nuevo Nombre\",\n  \"adopted\": true\n}",
+              "raw": "{\n  \"name\": \"Firulais Actualizado\",\n  \"adopted\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -312,19 +472,18 @@
             },
             "url": {
               "raw": "{{base_url}}/api/pets/{{pet_id}}",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "pets", "{{pet_id}}"],
               "variable": [
                 {
                   "key": "pet_id",
-                  "value": ""
+                  "value": "647b2c3d4e5f678901234567"
                 }
               ]
             },
-            "description": "Actualiza una mascota existente"
-          }
+            "description": "Actualiza la información de una mascota existente"
+          },
+          "response": []
         },
         {
           "name": "DELETE Pet",
@@ -333,24 +492,23 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/pets/{{pet_id}}",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "pets", "{{pet_id}}"],
               "variable": [
                 {
                   "key": "pet_id",
-                  "value": ""
+                  "value": "647b2c3d4e5f678901234567"
                 }
               ]
             },
-            "description": "Elimina una mascota"
-          }
+            "description": "Elimina una mascota del sistema"
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "🏡 ADOPTIONS",
+      "name": "🏠 ADOPTIONS - PROCESO DE ADOPCIONES",
       "item": [
         {
           "name": "GET All Adoptions",
@@ -359,13 +517,12 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/adoptions",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "adoptions"]
             },
-            "description": "Lista todas las adopciones"
-          }
+            "description": "Lista todas las adopciones registradas en el sistema"
+          },
+          "response": []
         },
         {
           "name": "GET Adoption by ID",
@@ -374,19 +531,18 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/adoptions/{{adoption_id}}",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "adoptions", "{{adoption_id}}"],
               "variable": [
                 {
                   "key": "adoption_id",
-                  "value": ""
+                  "value": "647c3d4e5f67890123456789"
                 }
               ]
             },
-            "description": "Obtiene una adopción específica por ID"
-          }
+            "description": "Obtiene una adopción específica por su ID"
+          },
+          "response": []
         },
         {
           "name": "POST Create Adoption",
@@ -395,31 +551,98 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/adoptions/{{user_id}}/{{pet_id}}",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
+              "host": ["{{base_url}}"],
               "path": ["api", "adoptions", "{{user_id}}", "{{pet_id}}"],
               "variable": [
                 {
                   "key": "user_id",
-                  "value": ""
+                  "value": "647a1b2c3d4e5f6789012345"
                 },
                 {
                   "key": "pet_id",
-                  "value": ""
+                  "value": "647b2c3d4e5f678901234567"
                 }
               ]
             },
-            "description": "Crea una nueva adopción (usuario adopta mascota). Necesita IDs válidos de usuario y mascota."
-          }
+            "description": "Crea una nueva adopción: un usuario adopta una mascota. Actualiza: pet.adopted = true, pet.owner = user._id, user.pets.push(pet._id)"
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "🔐 SESSIONS",
+      "name": "🧪 MOCKING - GENERACIÓN DE DATOS",
       "item": [
         {
-          "name": "POST Register",
+          "name": "GET Mocking Users (default 50)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/mocks/mockingusers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mocks", "mockingusers"]
+            },
+            "description": "Genera 50 usuarios mock. Todos tienen password 'coder123' encriptado, role aleatorio (user/admin), y pets array vacío."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Mocking Users (custom count)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/mocks/mockingusers?count=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mocks", "mockingusers"],
+              "query": [
+                {
+                  "key": "count",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Genera N usuarios mock (máximo 500). Parámetro: count"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Mocking Pets (default 100)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/mocks/mockingpets",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mocks", "mockingpets"]
+            },
+            "description": "Genera 100 mascotas mock. Especies aleatorias, adopted: false, owner: null."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Mocking Pets (custom count)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/mocks/mockingpets?count=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mocks", "mockingpets"],
+              "query": [
+                {
+                  "key": "count",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Genera N mascotas mock (máximo 1000). Parámetro: count"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Generate & Insert Data",
           "request": {
             "method": "POST",
             "header": [
@@ -430,7 +653,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"first_name\": \"Juan\",\n  \"last_name\": \"Perez\",\n  \"email\": \"juan@example.com\",\n  \"password\": \"123456\"\n}",
+              "raw": "{\n  \"users\": 5,\n  \"pets\": 3\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -438,144 +661,157 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/api/sessions/register",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "sessions", "register"]
+              "raw": "{{base_url}}/api/mocks/generateData",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mocks", "generateData"]
             },
-            "description": "Registra un nuevo usuario"
-          }
-        },
-        {
-          "name": "POST Login",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"123456\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/sessions/login",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "sessions", "login"]
-            },
-            "description": "Inicia sesión (crea cookie)"
-          }
-        },
-        {
-          "name": "GET Current",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/sessions/current",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "sessions", "current"]
-            },
-            "description": "Obtiene usuario actual (requiere cookie de login)"
-          }
-        },
-        {
-          "name": "GET Logout",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/sessions/logout",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "sessions", "logout"]
-            },
-            "description": "Cierra sesión (elimina cookie)"
-          }
-        },
-        {
-          "name": "POST Unprotected Login",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"123456\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/sessions/unprotectedLogin",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "sessions", "unprotectedLogin"]
-            },
-            "description": "Login sin protección (para testing)"
-          }
-        },
-        {
-          "name": "GET Unprotected Current",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/sessions/unprotectedCurrent",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "sessions", "unprotectedCurrent"]
-            },
-            "description": "Usuario actual sin protección (para testing)"
-          }
+            "description": "Genera e inserta usuarios y mascotas mock en la base de datos MongoDB. Parámetros: users (0-100), pets (0-100)"
+          },
+          "response": []
         }
       ]
+    },
+    {
+      "name": "📊 LOGS - MONITOREO",
+      "item": [
+        {
+          "name": "GET Error Logs (simulado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Los logs reales están en src/logs/. Health check muestra estado del sistema."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "⚙️ CONFIGURACIÓN DOCKER",
+      "item": [
+        {
+          "name": "Info Docker",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Página principal muestra información de Docker y comandos útiles"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "console.log('🚀 Ejecutando request: ' + pm.request.method + ' ' + pm.request.url.toString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Tests básicos para validar respuestas",
+          "pm.test(\"Status code is 2xx\", function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+          "});",
+          "",
+          "// Para respuestas JSON, validar estructura básica",
+          "if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {",
+          "    const jsonData = pm.response.json();",
+          "    ",
+          "    pm.test(\"Response has JSON body\", function () {",
+          "        pm.expect(jsonData).to.be.an(\"object\");",
+          "    });",
+          "    ",
+          "    // Validar estructura común de éxito",
+          "    if (jsonData.status === \"success\") {",
+          "        pm.test(\"Success response structure\", function () {",
+          "            pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+          "        });",
+          "    }",
+          "    ",
+          "    // Validar estructura común de error",
+          "    if (jsonData.status === \"error\") {",
+          "        pm.test(\"Error response structure\", function () {",
+          "            pm.expect(jsonData).to.have.property(\"status\", \"error\");",
+          "            pm.expect(jsonData).to.have.property(\"error\");",
+          "        });",
+          "    }",
+          "}",
+          "",
+          "// Guardar IDs dinámicos para uso posterior",
+          "if (pm.response.code === 200 && pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {",
+          "    const jsonData = pm.response.json();",
+          "    ",
+          "    // Guardar user_id si está disponible",
+          "    if (jsonData.payload && jsonData.payload._id && pm.request.url.toString().includes(\"/users\")) {",
+          "        pm.collectionVariables.set(\"user_id\", jsonData.payload._id);",
+          "        console.log(\"✅ User ID guardado: \" + jsonData.payload._id);",
+          "    }",
+          "    ",
+          "    // Guardar pet_id si está disponible",
+          "    if (jsonData.payload && jsonData.payload._id && pm.request.url.toString().includes(\"/pets\")) {",
+          "        pm.collectionVariables.set(\"pet_id\", jsonData.payload._id);",
+          "        console.log(\"✅ Pet ID guardado: \" + jsonData.payload._id);",
+          "    }",
+          "    ",
+          "    // Guardar adoption_id si está disponible",
+          "    if (jsonData.payload && jsonData.payload._id && pm.request.url.toString().includes(\"/adoptions\")) {",
+          "        pm.collectionVariables.set(\"adoption_id\", jsonData.payload._id);",
+          "        console.log(\"✅ Adoption ID guardado: \" + jsonData.payload._id);",
+          "    }",
+          "}"
+        ]
+      }
     }
   ],
   "variable": [
     {
       "key": "base_url",
       "value": "http://localhost:8080",
-      "type": "string"
+      "type": "string",
+      "description": "URL base del servidor. Cambiar según entorno (localhost, producción, Docker, etc.)"
     },
     {
       "key": "user_id",
       "value": "",
       "type": "string",
-      "description": "ID de usuario obtenido de GET All Users"
+      "description": "ID de usuario. Se actualiza automáticamente al crear/obtener usuarios."
     },
     {
       "key": "pet_id",
       "value": "",
       "type": "string",
-      "description": "ID de mascota obtenido de GET All Pets"
+      "description": "ID de mascota. Se actualiza automáticamente al crear/obtener mascotas."
     },
     {
       "key": "adoption_id",
       "value": "",
       "type": "string",
-      "description": "ID de adopción obtenido de GET All Adoptions"
+      "description": "ID de adopción. Se actualiza automáticamente al crear/obtener adopciones."
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Token de autenticación JWT (si se usa Authorization header en lugar de cookies)"
     }
-  ]
+  ],
+  "auth": null,
+  "protocolProfileBehavior": {}
 }

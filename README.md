@@ -197,7 +197,7 @@ JWT_EXPIRES_IN=1h
 
 ---
 
-## 📚 Endpoints Principales
+## 📚 Endpoints del sistema
 
 ### 🎯 Endpoints de Mocking
 
@@ -219,50 +219,59 @@ JWT_EXPIRES_IN=1h
 
 ---
 
-## 📊 Endpoints Principales
+## 📊 ENDPOINTS COMPLETOS DEL SISTEMA
 
-## 👥 Users (/api/users)
-- GET `/` - Listar todos los usuarios
-- GET `/:uid` - Obtener usuario por ID
-- PUT `/:uid` - Actualizar usuario
-- DELETE `/:uid` - Eliminar usuario
+### 🔐 SESSIONS (`/api/sessions`)
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| POST | `/register` | Registrar nuevo usuario | ❌ |
+| POST | `/login` | Iniciar sesión (cookie firmada) | ❌ |
+| GET | `/current` | Usuario actual autenticado | ✅ |
+| GET | `/logout` | Cerrar sesión | ✅ |
+| POST | `/unprotectedLogin` | Login sin protección (testing) | ❌ |
+| GET | `/unprotectedCurrent` | Usuario sin protección (testing) | ❌ |
 
-## 🐾 Pets (/api/pets)
-- GET `/` - Listar todas las mascotas
-- POST `/` - Crear nueva mascota
-- POST `/withimage` - Crear mascota con imagen
-- PUT `/:pid` - Actualizar mascota
-- DELETE `/:pid` - Eliminar mascota
-- GET `/:pid` - Obtener mascota por ID
+### 👥 USERS (`/api/users`)
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/` | Listar todos los usuarios | ✅ |
+| GET | `/:uid` | Obtener usuario por ID | ✅ |
+| PUT | `/:uid` | Actualizar usuario | ✅ |
+| DELETE | `/:uid` | Eliminar usuario | ✅ |
+| POST | `/:uid/documents` | Subir documentos de usuario | ✅ |
 
-## 🏠 Adoptions (/api/adoptions)
-- GET `/` - Listar todas las adopciones
-- GET `/:aid` - Obtener adopción por ID
-- POST `/:uid/:pid` - Crear nueva adopción
+### 🐾 PETS (`/api/pets`)
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/` | Listar todas las mascotas | ❌ |
+| POST | `/` | Crear nueva mascota | ✅ |
+| GET | `/:pid` | Obtener mascota por ID | ❌ |
+| PUT | `/:pid` | Actualizar mascota | ✅ |
+| DELETE | `/:pid` | Eliminar mascota | ✅ |
+| POST | `/withimage` | Crear mascota con imagen | ✅ |
 
-## 🔐 Sessions (/api/sessions)
-- POST `/register` - Registrar nuevo usuario
-- POST `/login` - Iniciar sesión
-- GET `/current` - Usuario actual
-- GET `/logout` - Cerrar sesión
+### 🏠 ADOPTIONS (`/api/adoptions`)
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/` | Listar todas las adopciones | ✅ |
+| GET | `/:aid` | Obtener adopción por ID | ✅ |
+| POST | `/:uid/:pid` | Crear nueva adopción | ✅ |
 
+### 🧪 MOCKING (`/api/mocks`)
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/mockingusers` | Generar usuarios mock | ❌ |
+| GET | `/mockingpets` | Generar mascotas mock | ❌ |
+| POST | `/generateData` | Insertar datos mock en DB | ❌ |
 
----
+### 📊 SYSTEM (`/`)
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/` | Página principal con información |
+| GET | `/api-docs` | Documentación Swagger UI |
+| GET | `/health` | Health check del sistema |
+| GET | `/api-docs-json` | Especificación OpenAPI JSON |
 
-## 📈 Health Check
-
-Endpoint de monitoreo: GET `/health`
-
-```json
-{
-  "status": "OK",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "environment": "production",
-  "database": {
-    "status": "connected",
-    "name": "backend_coder"
-  }
-}
 ```
 
 ---

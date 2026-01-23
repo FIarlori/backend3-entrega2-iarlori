@@ -1,16 +1,17 @@
-import express from 'express';
-import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
+import express from 'express';
+import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
+import { loggerMiddleware } from './middlewares/logger.middleware.js';
+import logger from './utils/logger.js';
 
-import usersRouter from './routes/users.router.js';
-import petsRouter from './routes/pets.router.js';
-import adoptionsRouter from './routes/adoption.router.js';
-import sessionsRouter from './routes/sessions.router.js';
-import mocksRouter from './routes/mocks.router.js';
 import { swaggerSpec } from './docs/swagger.js';
-
+import adoptionsRouter from './routes/adoption.router.js';
+import mocksRouter from './routes/mocks.router.js';
+import petsRouter from './routes/pets.router.js';
+import sessionsRouter from './routes/sessions.router.js';
+import usersRouter from './routes/users.router.js';
 
 const app = express();
 
@@ -20,11 +21,14 @@ const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/backend_co
 
 mongoose.set('strictQuery', false);
 
-console.log(`🌍 Entorno: ${NODE_ENV}`);
-console.log(`🔗 MongoDB: ${MONGO_URL}`);
+logger.info(`🌍 Iniciando aplicación en entorno: ${NODE_ENV}`);
+logger.info(`🔗 MongoDB: ${MONGO_URL}`);
+logger.info(`🚀 Puerto: ${PORT}`);
 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
+app.use(loggerMiddleware);
 
 app.use('/public', express.static('src/public'));
 
@@ -38,13 +42,13 @@ mongoose.connect(MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-.then(() => {
-    console.log(`✅ MongoDB conectado (${NODE_ENV})`);
-    console.log(`📁 Base de datos: ${mongoose.connection.name}`);
-})
-.catch((error) => {
-    console.error('❌ Error conectando a MongoDB:', error.message);
-});
+    .then(() => {
+        logger.info(`✅ MongoDB conectado (${NODE_ENV})`);
+        logger.info(`📁 Base de datos: ${mongoose.connection.name}`);
+    })
+    .catch((error) => {
+        logger.error(`❌ Error conectando a MongoDB: ${error.message}`);
+    });
 
 if (NODE_ENV === 'development') {
     app.use((req, res, next) => {
@@ -52,7 +56,6 @@ if (NODE_ENV === 'development') {
         next();
     });
 }
-
 
 app.use('/api/users', usersRouter);
 app.use('/api/pets', petsRouter);
@@ -85,7 +88,7 @@ app.get('/', (req, res) => {
                 }
                 
                 .container {
-                    max-width: 1200px;
+                    max-width: 1400px;
                     margin: 0 auto;
                     background: white;
                     border-radius: 15px;
@@ -131,8 +134,8 @@ app.get('/', (req, res) => {
                 .content {
                     padding: 40px;
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                    gap: 30px;
+                    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                    gap: 25px;
                 }
                 
                 .section {
@@ -169,7 +172,7 @@ app.get('/', (req, res) => {
                 }
                 
                 li {
-                    margin-bottom: 12px;
+                    margin-bottom: 10px;
                     padding-left: 25px;
                     position: relative;
                 }
@@ -220,9 +223,10 @@ app.get('/', (req, res) => {
                 .endpoint {
                     background: white;
                     border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 10px;
+                    padding: 12px 15px;
+                    margin-bottom: 8px;
                     border-left: 4px solid #4c51bf;
+                    font-size: 0.9rem;
                 }
                 
                 .method {
@@ -231,22 +235,95 @@ app.get('/', (req, res) => {
                     color: white;
                     padding: 3px 10px;
                     border-radius: 4px;
-                    font-size: 0.8rem;
+                    font-size: 0.75rem;
                     font-weight: bold;
                     margin-right: 10px;
+                    min-width: 50px;
+                    text-align: center;
                 }
                 
                 .method.get { background: #48bb78; }
                 .method.post { background: #ed8936; }
                 .method.put { background: #4299e1; }
                 .method.delete { background: #f56565; }
+                .method.auth { background: #805ad5; }
+                .method.noauth { background: #718096; }
+                
+                .auth-badge {
+                    display: inline-block;
+                    background: #805ad5;
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                    font-size: 0.7rem;
+                    margin-left: 10px;
+                    vertical-align: middle;
+                }
+                
+                .noauth-badge {
+                    display: inline-block;
+                    background: #718096;
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                    font-size: 0.7rem;
+                    margin-left: 10px;
+                    vertical-align: middle;
+                }
+                
+                .description {
+                    display: block;
+                    color: #718096;
+                    font-size: 0.85rem;
+                    margin-top: 5px;
+                    margin-left: 60px;
+                }
+                
+                .endpoint-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 5px;
+                }
+                
+                .endpoint-method {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
                 
                 footer {
                     text-align: center;
-                    padding: 20px;
+                    padding: 25px;
                     background: #2d3748;
                     color: white;
                     margin-top: 30px;
+                }
+                
+                .stats {
+                    display: flex;
+                    justify-content: center;
+                    gap: 30px;
+                    margin-top: 15px;
+                    flex-wrap: wrap;
+                }
+                
+                .stat {
+                    background: rgba(255,255,255,0.1);
+                    padding: 10px 20px;
+                    border-radius: 10px;
+                    min-width: 120px;
+                }
+                
+                .stat-number {
+                    font-size: 1.8rem;
+                    font-weight: bold;
+                    display: block;
+                }
+                
+                .stat-label {
+                    font-size: 0.9rem;
+                    opacity: 0.8;
                 }
                 
                 @media (max-width: 768px) {
@@ -256,10 +333,15 @@ app.get('/', (req, res) => {
                     
                     .content {
                         padding: 20px;
+                        grid-template-columns: 1fr;
                     }
                     
                     .section {
                         padding: 20px;
+                    }
+                    
+                    .endpoint {
+                        padding: 10px;
                     }
                 }
             </style>
@@ -275,145 +357,349 @@ app.get('/', (req, res) => {
                     <div class="status-badge">
                         Entorno: ${NODE_ENV}
                     </div>
+                    <div class="status-badge">
+                        Total Endpoints: 22
+                    </div>
                 </header>
                 
                 <div class="content">
                     <div class="section">
-                        <h2>📚 Documentación API</h2>
-                        <ul>
-                            <li><a href="/api-docs" target="_blank">📖 Swagger UI Documentation</a> - Documentación interactiva completa</li>
-                            <li><a href="/api-docs-json" target="_blank">📄 Swagger JSON</a> - Especificación OpenAPI 3.0</li>
-                            <li><a href="/health" target="_blank">🩺 Health Check</a> - Estado del sistema</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>👥 Módulo Users</h2>
+                        <h2>📚 Documentación & Sistema</h2>
                         <div class="endpoint">
                             <span class="method get">GET</span> 
-                            <a href="/api/users" target="_blank">/api/users</a> - Listar usuarios
+                            <a href="/api-docs" target="_blank">/api-docs</a>
+                            <span class="description">Swagger UI Documentation - Documentación interactiva completa</span>
                         </div>
                         <div class="endpoint">
                             <span class="method get">GET</span> 
-                            /api/users/:uid - Obtener usuario por ID
+                            <a href="/api-docs-json" target="_blank">/api-docs-json</a>
+                            <span class="description">Especificación OpenAPI 3.0 en formato JSON</span>
                         </div>
                         <div class="endpoint">
-                            <span class="method put">PUT</span> 
-                            /api/users/:uid - Actualizar usuario
+                            <span class="method get">GET</span> 
+                            <a href="/health" target="_blank">/health</a>
+                            <span class="description">Health Check - Estado del sistema y base de datos</span>
                         </div>
                         <div class="endpoint">
-                            <span class="method delete">DELETE</span> 
-                            /api/users/:uid - Eliminar usuario
+                            <span class="method get">GET</span> 
+                            <a href="/public" target="_blank">/public</a>
+                            <span class="description">Archivos estáticos (imágenes, documentos)</span>
                         </div>
                     </div>
                     
                     <div class="section">
-                        <h2>🐾 Módulo Pets</h2>
+                        <h2>👥 Módulo Users (5 endpoints)</h2>
                         <div class="endpoint">
-                            <span class="method get">GET</span> 
-                            <a href="/api/pets" target="_blank">/api/pets</a> - Listar mascotas
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    <a href="/api/users" target="_blank">/api/users</a>
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Listar todos los usuarios registrados</span>
                         </div>
                         <div class="endpoint">
-                            <span class="method post">POST</span> 
-                            /api/pets - Crear mascota
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    /api/users/:uid
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Obtener usuario específico por ID</span>
                         </div>
                         <div class="endpoint">
-                            <span class="method post">POST</span> 
-                            /api/pets/withimage - Crear mascota con imagen
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method put">PUT</span>
+                                    /api/users/:uid
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Actualizar información de usuario</span>
                         </div>
                         <div class="endpoint">
-                            <span class="method put">PUT</span> 
-                            /api/pets/:pid - Actualizar mascota
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method delete">DELETE</span>
+                                    /api/users/:uid
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Eliminar usuario del sistema</span>
                         </div>
                         <div class="endpoint">
-                            <span class="method delete">DELETE</span> 
-                            /api/pets/:pid - Eliminar mascota
-                        </div>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>🏠 Módulo Adoptions</h2>
-                        <div class="endpoint">
-                            <span class="method get">GET</span> 
-                            <a href="/api/adoptions" target="_blank">/api/adoptions</a> - Listar adopciones
-                        </div>
-                        <div class="endpoint">
-                            <span class="method get">GET</span> 
-                            /api/adoptions/:aid - Obtener adopción por ID
-                        </div>
-                        <div class="endpoint">
-                            <span class="method post">POST</span> 
-                            /api/adoptions/:uid/:pid - Crear adopción
-                        </div>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>🔐 Módulo Sessions</h2>
-                        <div class="endpoint">
-                            <span class="method post">POST</span> 
-                            /api/sessions/register - Registrar usuario
-                        </div>
-                        <div class="endpoint">
-                            <span class="method post">POST</span> 
-                            /api/sessions/login - Iniciar sesión
-                        </div>
-                        <div class="endpoint">
-                            <span class="method get">GET</span> 
-                            /api/sessions/current - Usuario actual
-                        </div>
-                        <div class="endpoint">
-                            <span class="method get">GET</span> 
-                            /api/sessions/logout - Cerrar sesión
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method post">POST</span>
+                                    /api/users/:uid/documents
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Subir documentos del usuario (máx 10 archivos)</span>
                         </div>
                     </div>
                     
                     <div class="section">
-                        <h2>🧪 Módulo Mocking</h2>
+                        <h2>🐾 Módulo Pets (6 endpoints)</h2>
                         <div class="endpoint">
-                            <span class="method get">GET</span> 
-                            <a href="/api/mocks/mockingpets" target="_blank">/api/mocks/mockingpets</a> - Generar mascotas mock
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    <a href="/api/pets" target="_blank">/api/pets</a>
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Listar todas las mascotas registradas</span>
                         </div>
                         <div class="endpoint">
-                            <span class="method get">GET</span> 
-                            <a href="/api/mocks/mockingusers" target="_blank">/api/mocks/mockingusers</a> - Generar usuarios mock
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method post">POST</span>
+                                    /api/pets
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Crear nueva mascota</span>
                         </div>
                         <div class="endpoint">
-                            <span class="method post">POST</span> 
-                            /api/mocks/generateData - Insertar datos en DB
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    /api/pets/:pid
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Obtener mascota por ID</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method put">PUT</span>
+                                    /api/pets/:pid
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Actualizar información de mascota</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method delete">DELETE</span>
+                                    /api/pets/:pid
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Eliminar mascota del sistema</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method post">POST</span>
+                                    /api/pets/withimage
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Crear mascota con imagen (multipart/form-data)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🏠 Módulo Adoptions (3 endpoints)</h2>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    <a href="/api/adoptions" target="_blank">/api/adoptions</a>
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Listar todas las adopciones</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    /api/adoptions/:aid
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Obtener adopción específica por ID</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method post">POST</span>
+                                    /api/adoptions/:uid/:pid
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Crear nueva adopción (usuario adopta mascota)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🔐 Módulo Sessions (6 endpoints)</h2>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method post">POST</span>
+                                    /api/sessions/register
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Registrar nuevo usuario en el sistema</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method post">POST</span>
+                                    /api/sessions/login
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Iniciar sesión (cookie JWT firmada)</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    /api/sessions/current
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Obtener información del usuario actual</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    /api/sessions/logout
+                                </div>
+                                <span class="auth-badge">Auth</span>
+                            </div>
+                            <span class="description">Cerrar sesión (limpia cookie)</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method post">POST</span>
+                                    /api/sessions/unprotectedLogin
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Login sin protección (para testing)</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    /api/sessions/unprotectedCurrent
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Usuario actual sin protección (para testing)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🧪 Módulo Mocking (3 endpoints)</h2>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    <a href="/api/mocks/mockingusers" target="_blank">/api/mocks/mockingusers</a>
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Generar usuarios mock (por defecto 50)</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method get">GET</span>
+                                    <a href="/api/mocks/mockingpets" target="_blank">/api/mocks/mockingpets</a>
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Generar mascotas mock (por defecto 100)</span>
+                        </div>
+                        <div class="endpoint">
+                            <div class="endpoint-header">
+                                <div class="endpoint-method">
+                                    <span class="method post">POST</span>
+                                    /api/mocks/generateData
+                                </div>
+                                <span class="noauth-badge">No Auth</span>
+                            </div>
+                            <span class="description">Generar e insertar datos mock en MongoDB</span>
                         </div>
                     </div>
                     
                     <div class="section docker-section">
-                        <h2>🐳 Docker</h2>
+                        <h2>🐳 Docker & Deployment</h2>
                         <ul>
-                            <li><strong>Imagen DockerHub:</strong> 
+                            <li><strong>📦 Imagen DockerHub:</strong> 
                                 <a href="https://hub.docker.com/r/fi93/backend3-entrega-final" target="_blank">
                                     fi93/backend3-entrega-final
                                 </a>
                             </li>
-                            <li><strong>Comandos Docker:</strong></li>
-                            <li>🔧 Construir: <code>npm run docker:build</code></li>
-                            <li>🚀 Ejecutar: <code>npm run docker:run</code></li>
-                            <li>📤 Publicar: <code>npm run docker:push</code></li>
-                            <li>🐳 Compose: <code>npm run docker:compose</code></li>
+                            <li><strong>🚀 Comandos Docker:</strong></li>
+                            <li>🔧 Construir imagen: <code>npm run docker:build</code></li>
+                            <li>▶️ Ejecutar contenedor: <code>npm run docker:run</code></li>
+                            <li>📤 Publicar a DockerHub: <code>npm run docker:push</code></li>
+                            <li>🐳 Compose completo: <code>npm run docker:compose</code></li>
+                            <li>🔨 Compose con rebuild: <code>npm run docker:compose:build</code></li>
+                            <li>🧹 Limpiar contenedores: <code>npm run docker:compose:clean</code></li>
                         </ul>
                     </div>
                     
                     <div class="section">
-                        <h2>🧪 Testing</h2>
+                        <h2>🧪 Testing & Quality</h2>
                         <ul>
-                            <li><strong>Tests Adoptions:</strong> <code>npm run test:adoptions</code></li>
-                            <li><strong>Tests Simples:</strong> <code>npm run test:simple</code></li>
-                            <li><strong>Todos los Tests:</strong> <code>npm run test:all</code></li>
-                            <li><strong>Watch Mode:</strong> <code>npm run test:watch</code></li>
-                            <li><strong>Linting:</strong> <code>npm run lint</code></li>
+                            <li><strong>📊 Tests por módulo:</strong></li>
+                            <li>🏠 Adoptions: <code>npm run test:adoptions</code></li>
+                            <li>🐾 Pets: <code>npm run test:pets</code></li>
+                            <li>🔐 Sessions: <code>npm run test:sessions</code></li>
+                            <li>👥 Users: <code>npm run test:users</code></li>
+                            <li>🧪 Mocking: <code>npm run test:mocks</code></li>
+                            <li>🔧 Utils: <code>npm run test:utils</code></li>
+                            <li>🔑 Bcrypt/DTO: <code>npm run test:bcrypt-dto</code></li>
+                            <li>✅ Todos los tests: <code>npm run test:all</code></li>
+                            <li>👁️ Watch mode: <code>npm run test:watch</code></li>
+                            <li>🔍 Linting: <code>npm run lint</code></li>
+                            <li>📈 Ver logs: <code>npm run logs</code></li>
                         </ul>
                     </div>
                 </div>
                 
                 <footer>
                     <p>Backend III - Testing y Escalabilidad | Entrega Final | Franco Iarlori</p>
-                    <p>🚀 Proyecto Dockerizado con Swagger Documentation</p>
+                    <p>🚀 Proyecto Dockerizado con Swagger Documentation y Testing Completo</p>
+                    
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">22</span>
+                            <span class="stat-label">Endpoints</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">5</span>
+                            <span class="stat-label">Módulos</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">${mongoose.connection.readyState === 1 ? '✅' : '❌'}</span>
+                            <span class="stat-label">MongoDB</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">🐳</span>
+                            <span class="stat-label">Docker</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">📚</span>
+                            <span class="stat-label">Swagger</span>
+                        </div>
+                    </div>
                 </footer>
             </div>
         </body>
@@ -434,7 +720,7 @@ app.get('/health', (req, res) => {
         2: 'connecting',
         3: 'disconnecting'
     };
-    
+
     const healthStatus = {
         status: dbStatus === 1 ? 'OK' : 'WARNING',
         timestamp: new Date().toISOString(),
@@ -452,9 +738,26 @@ app.get('/health', (req, res) => {
             documentation: '/api-docs',
             api: '/api',
             health: '/health'
+        },
+        modules: {
+            users: '/api/users',
+            pets: '/api/pets',
+            adoptions: '/api/adoptions',
+            sessions: '/api/sessions',
+            mocking: '/api/mocks'
+        },
+        stats: {
+            total_endpoints: 22,
+            endpoints_by_module: {
+                users: 5,
+                pets: 6,
+                adoptions: 3,
+                sessions: 6,
+                mocking: 3
+            }
         }
     };
-    
+
     res.status(dbStatus === 1 ? 200 : 503).json(healthStatus);
 });
 
@@ -466,25 +769,25 @@ app.use((err, req, res, next) => {
         method: req.method,
         timestamp: new Date().toISOString()
     });
-    
+
     const response = {
         status: 'error',
         message: NODE_ENV === 'development' ? err.message : 'Something went wrong'
     };
-    
+
     if (NODE_ENV === 'development') {
         response.error = err.message;
         response.stack = err.stack;
         response.path = req.path;
         response.method = req.method;
     }
-    
+
     let statusCode = 500;
     if (err.name === 'ValidationError') statusCode = 400;
     if (err.name === 'UnauthorizedError') statusCode = 401;
     if (err.name === 'ForbiddenError') statusCode = 403;
     if (err.name === 'NotFoundError') statusCode = 404;
-    
+
     res.status(statusCode).json(response);
 });
 
@@ -494,27 +797,107 @@ app.use('*', (req, res) => {
         message: 'Route not found',
         requestedPath: req.originalUrl,
         availableRoutes: {
-            documentation: '/api-docs',
-            api: {
-                users: '/api/users',
-                pets: '/api/pets',
-                adoptions: '/api/adoptions',
-                sessions: '/api/sessions',
-                mocks: '/api/mocks'
+            documentation: {
+                swagger_ui: '/api-docs',
+                swagger_json: '/api-docs-json',
+                health: '/health'
             },
-            health: '/health'
+            api_modules: {
+                users: {
+                    getAll: 'GET /api/users',
+                    getById: 'GET /api/users/:uid',
+                    update: 'PUT /api/users/:uid',
+                    delete: 'DELETE /api/users/:uid',
+                    uploadDocuments: 'POST /api/users/:uid/documents'
+                },
+                pets: {
+                    getAll: 'GET /api/pets',
+                    create: 'POST /api/pets',
+                    getById: 'GET /api/pets/:pid',
+                    update: 'PUT /api/pets/:pid',
+                    delete: 'DELETE /api/pets/:pid',
+                    createWithImage: 'POST /api/pets/withimage'
+                },
+                adoptions: {
+                    getAll: 'GET /api/adoptions',
+                    getById: 'GET /api/adoptions/:aid',
+                    create: 'POST /api/adoptions/:uid/:pid'
+                },
+                sessions: {
+                    register: 'POST /api/sessions/register',
+                    login: 'POST /api/sessions/login',
+                    current: 'GET /api/sessions/current',
+                    logout: 'GET /api/sessions/logout',
+                    unprotectedLogin: 'POST /api/sessions/unprotectedLogin',
+                    unprotectedCurrent: 'GET /api/sessions/unprotectedCurrent'
+                },
+                mocking: {
+                    mockUsers: 'GET /api/mocks/mockingusers',
+                    mockPets: 'GET /api/mocks/mockingpets',
+                    generateData: 'POST /api/mocks/generateData'
+                }
+            }
+        },
+        total_endpoints: 22,
+        quick_links: {
+            home: '/',
+            documentation: '/api-docs',
+            health_check: '/health'
         }
     });
 });
 
 const server = app.listen(PORT, () => {
-    console.log(`\n🚀 Servidor ejecutándose en http://localhost:${PORT}`);
-    console.log(`📁 Entorno: ${NODE_ENV}`);
-    console.log(`📚 Swagger Documentation: http://localhost:${PORT}/api-docs`);
-    console.log(`🩺 Health Check: http://localhost:${PORT}/health`);
-    console.log(`🐳 Docker Image: fi93/backend3-entrega-final`);
-    console.log(`   Tests Adoptions: npm run test:adoptions`);
-    console.log(`   Docker Build: npm run docker:build`);
+    console.log(`
+╔═══════════════════════════════════════════════════════════════════════╗
+║                                                                       ║
+║   🚀 Backend III - Entrega Final                                     ║
+║   📁 Entorno: ${NODE_ENV}${NODE_ENV === 'development' ? '        ' : '         '}                          ║
+║   🔗 MongoDB: ${mongoose.connection.readyState === 1 ? '✅ Conectado' : '❌ Desconectado'}                      ║
+║                                                                       ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║                                                                       ║
+║   📊 ENDPOINTS DISPONIBLES:                                         ║
+║                                                                       ║
+║   🔐 Sessions (6):                                                   ║
+║     POST /api/sessions/register     POST /api/sessions/login         ║
+║     GET  /api/sessions/current      GET  /api/sessions/logout        ║
+║     POST /api/sessions/unprotectedLogin                              ║
+║     GET  /api/sessions/unprotectedCurrent                            ║
+║                                                                       ║
+║   👥 Users (5):                                                      ║
+║     GET  /api/users                GET  /api/users/:uid              ║
+║     PUT  /api/users/:uid           DELETE /api/users/:uid            ║
+║     POST /api/users/:uid/documents                                    ║
+║                                                                       ║
+║   🐾 Pets (6):                                                       ║
+║     GET  /api/pets                 POST /api/pets                    ║
+║     GET  /api/pets/:pid            PUT  /api/pets/:pid               ║
+║     DELETE /api/pets/:pid          POST /api/pets/withimage          ║
+║                                                                       ║
+║   🏠 Adoptions (3):                                                  ║
+║     GET  /api/adoptions            GET  /api/adoptions/:aid          ║
+║     POST /api/adoptions/:uid/:pid                                     ║
+║                                                                       ║
+║   🧪 Mocking (3):                                                    ║
+║     GET  /api/mocks/mockingusers   GET  /api/mocks/mockingpets       ║
+║     POST /api/mocks/generateData                                      ║
+║                                                                       ║
+║   📚 System (4):                                                     ║
+║     GET  /                         GET  /api-docs                    ║
+║     GET  /api-docs-json            GET  /health                      ║
+║                                                                       ║
+║   📋 Total: 22 endpoints                                            ║
+║                                                                       ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║                                                                       ║
+║   🌐 Servidor ejecutándose en: http://localhost:${PORT}               ║
+║   📖 Swagger Documentation: http://localhost:${PORT}/api-docs         ║
+║   🩺 Health Check: http://localhost:${PORT}/health                   ║
+║   🐳 Docker Image: fi93/backend3-entrega-final                       ║
+║                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+    `);
 });
 
 process.on('SIGTERM', () => {

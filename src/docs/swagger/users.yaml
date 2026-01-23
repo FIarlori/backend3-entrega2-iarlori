@@ -4,12 +4,47 @@ paths:
       tags:
         - Users
       summary: Obtener todos los usuarios
-      description: Retorna una lista de todos los usuarios registrados en el sistema. Requiere autenticación.
+      description: |
+        Retorna una lista completa de todos los usuarios registrados en el sistema.
+        
+        ### Seguridad:
+        - Requiere cookie de autenticación válida
+        - Usuarios regulares solo ven información básica
+        - Administradores ven información completa
+        
+        ### Paginación:
+        - Actualmente retorna todos los usuarios
+        - En producción se recomienda implementar paginación
+      operationId: getAllUsers
       security:
         - cookieAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Número máximo de usuarios a retornar
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: page
+          in: query
+          required: false
+          description: Número de página para paginación
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
       responses:
         '200':
-          description: Lista de usuarios obtenida exitosamente
+          description: |
+            Lista de usuarios obtenida exitosamente.
+            
+            ### Estructura de respuesta:
+            - `status`: Estado de la operación
+            - `payload`: Array con los usuarios
+            - `count`: Número total de usuarios retornados
           content:
             application/json:
               schema:
@@ -17,30 +52,62 @@ paths:
                 properties:
                   status:
                     type: string
+                    enum: [success, error]
                     example: success
                   payload:
                     type: array
                     items:
-                      $ref: '#/components/schemas/User'
+                      $ref: '#/components/schemas/UserFull'
+                  count:
+                    type: integer
+                    example: 25
         '401':
-          description: No autenticado
+          description: |
+            No autenticado. No se proporcionó token válido.
+            
+            ### Solución:
+            - Iniciar sesión en `/api/sessions/login`
+            - Verificar que la cookie esté presente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: |
+            No autorizado. Permisos insuficientes.
+            
+            ### Posibles causas:
+            - Usuario no tiene rol de administrador
+            - Token expirado o inválido
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Error interno del servidor
+          description: |
+            Error interno del servidor.
+            
+            ### Detalles técnicos:
+            - Error en la conexión a base de datos
+            - Problema de configuración del servidor
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    
+
   /api/users/{uid}:
     get:
       tags:
         - Users
-      summary: Obtener un usuario por ID
-      description: Retorna la información de un usuario específico
+      summary: Obtener usuario por ID
+      description: |
+        Retorna la información detallada de un usuario específico por su ID.
+        
+        ### Validaciones:
+        - El ID debe ser un ObjectId de MongoDB válido (24 caracteres hexadecimales)
+        - El usuario debe existir en la base de datos
+        - Usuarios solo pueden ver su propia información (a menos que sean admin)
+      operationId: getUserById
       security:
         - cookieAuth: []
       parameters:
@@ -54,7 +121,14 @@ paths:
             example: '507f1f77bcf86cd799439011'
       responses:
         '200':
-          description: Usuario encontrado exitosamente
+          description: |
+            Usuario encontrado exitosamente.
+            
+            ### Incluye:
+            - Información básica del usuario
+            - Documentos subidos
+            - Historial de conexiones
+            - Mascotas adoptadas
           content:
             application/json:
               schema:
@@ -64,19 +138,29 @@ paths:
                     type: string
                     example: success
                   payload:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserFull'
         '400':
-          description: ID inválido o formato incorrecto
+          description: |
+            ID de usuario inválido.
+            
+            ### Formato esperado:
+            - 24 caracteres hexadecimales
+            - Ejemplo: `507f1f77bcf86cd799439011`
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorValidation'
         '404':
-          description: Usuario no encontrado
+          description: |
+            Usuario no encontrado.
+            
+            ### Posibles causas:
+            - El ID no existe en la base de datos
+            - El usuario fue eliminado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorNotFound'
         '500':
           description: Error interno del servidor
           content:
@@ -87,15 +171,26 @@ paths:
     put:
       tags:
         - Users
-      summary: Actualizar un usuario
-      description: Actualiza la información de un usuario existente
+      summary: Actualizar usuario
+      description: |
+        Actualiza la información de un usuario existente.
+        
+        ### Campos actualizables:
+        - first_name, last_name
+        - email (debe ser único)
+        - role (solo administradores pueden cambiar roles)
+        
+        ### Restricciones:
+        - Usuarios solo pueden actualizar su propia información
+        - Administradores pueden actualizar cualquier usuario
+        - No se puede cambiar el password desde este endpoint
+      operationId: updateUser
       security:
         - cookieAuth: []
       parameters:
         - name: uid
           in: path
           required: true
-          description: ID del usuario a actualizar
           schema:
             type: string
             pattern: '^[0-9a-fA-F]{24}$'
@@ -109,18 +204,31 @@ paths:
               properties:
                 first_name:
                   type: string
+                  minLength: 2
+                  maxLength: 50
                   description: Nuevo nombre del usuario
+                  example: "Juan"
                 last_name:
                   type: string
+                  minLength: 2
+                  maxLength: 50
                   description: Nuevo apellido del usuario
+                  example: "Pérez"
                 email:
                   type: string
                   format: email
                   description: Nuevo email del usuario
+                  example: "juan.perez@example.com"
                 role:
                   type: string
-                  enum: ['user', 'admin']
-                  description: Nuevo rol del usuario
+                  enum: ['user', 'admin', 'premium']
+                  description: Nuevo rol del usuario (solo admin)
+                  example: "admin"
+                status:
+                  type: string
+                  enum: ['pending', 'verified', 'suspended']
+                  description: Estado del usuario (solo admin)
+                  example: "verified"
               example:
                 first_name: "Juan"
                 last_name: "Pérez"
@@ -132,26 +240,25 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: User updated
+                $ref: '#/components/schemas/Success'
         '400':
-          description: ID inválido o datos incompletos
+          description: Datos inválidos o incompletos
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorValidation'
         '404':
           description: Usuario no encontrado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorNotFound'
+        '409':
+          description: Email ya está en uso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorConflict'
         '500':
           description: Error interno del servidor
           content:
@@ -162,8 +269,19 @@ paths:
     delete:
       tags:
         - Users
-      summary: Eliminar un usuario
-      description: Elimina un usuario del sistema
+      summary: Eliminar usuario
+      description: |
+        Elimina un usuario del sistema permanentemente.
+        
+        ### Advertencias:
+        - Esta acción NO se puede deshacer
+        - Se eliminan todos los datos del usuario
+        - Las adopciones relacionadas se mantienen por integridad referencial
+        
+        ### Permisos:
+        - Usuarios solo pueden eliminarse a sí mismos
+        - Administradores pueden eliminar cualquier usuario
+      operationId: deleteUser
       security:
         - cookieAuth: []
       parameters:
@@ -180,6 +298,86 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/Success'
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/users/{uid}/documents:
+    post:
+      tags:
+        - Users
+      summary: Subir documentos del usuario
+      description: |
+        Sube uno o múltiples documentos para un usuario específico.
+        
+        ### Características:
+        - Máximo 10 archivos por solicitud
+        - Tamaño máximo por archivo: 10MB
+        - Tipos permitidos: PDF, DOC, DOCX, TXT, RTF, ODT, imágenes
+        - Los documentos se almacenan en `/public/documents/`
+        - Se actualiza automáticamente el array `documents` del usuario
+        
+        ### Tipos de documentos detectados automáticamente:
+        1. **identification**: DNI, cédula, pasaporte
+        2. **address**: Comprobante de domicilio
+        3. **account**: Estado de cuenta, extractos bancarios
+        4. **other**: Otros tipos de documentos
+      operationId: uploadUserDocuments
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: ID del usuario que subirá documentos
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                documents:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: |
+                    Archivos a subir (máximo 10).
+                    
+                    ### Nombres sugeridos:
+                    - `dni_front.jpg` - Para identificación
+                    - `comprobante_domicilio.pdf` - Para domicilio
+                    - `estado_cuenta.pdf` - Para cuenta bancaria
+              encoding:
+                documents:
+                  style: form
+                  explode: true
+      responses:
+        '200':
+          description: Documentos subidos exitosamente
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
                   status:
@@ -187,19 +385,36 @@ paths:
                     example: success
                   message:
                     type: string
-                    example: User deleted
+                    example: Documents uploaded successfully
+                  count:
+                    type: integer
+                    example: 3
+                  documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Document'
+                  totalDocuments:
+                    type: integer
+                    example: 5
         '400':
-          description: ID inválido
+          description: |
+            Error en la subida de archivos.
+            
+            ### Posibles causas:
+            - No se subieron archivos
+            - Archivos exceden el tamaño máximo
+            - Tipo de archivo no permitido
+            - Número de archivos excede el límite
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorValidation'
         '404':
           description: Usuario no encontrado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorNotFound'
         '500':
           description: Error interno del servidor
           content:
@@ -209,41 +424,155 @@ paths:
 
 components:
   schemas:
-    UserResponse:
+    UserFull:
       type: object
       properties:
         _id:
           type: string
-          description: ID único del usuario
+          description: ID único del usuario (ObjectId)
+          example: "507f1f77bcf86cd799439011"
         first_name:
           type: string
           description: Nombre del usuario
+          example: "Juan"
         last_name:
           type: string
           description: Apellido del usuario
+          example: "Pérez"
         email:
           type: string
-          description: Email del usuario
+          format: email
+          description: Email del usuario (único)
+          example: "juan.perez@example.com"
         role:
           type: string
-          description: Rol del usuario
+          enum: ['user', 'admin', 'premium']
+          description: Rol del usuario en el sistema
+          example: "user"
         pets:
           type: array
+          description: IDs de las mascotas adoptadas por el usuario
           items:
             type: string
-          description: IDs de las mascotas del usuario
+          example: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+        documents:
+          type: array
+          description: Documentos subidos por el usuario
+          items:
+            $ref: '#/components/schemas/Document'
+        last_connection:
+          type: string
+          format: date-time
+          description: Última conexión del usuario
+          example: "2024-01-15T10:30:00Z"
+        status:
+          type: string
+          enum: ['pending', 'verified', 'suspended']
+          description: Estado de verificación del usuario
+          example: "verified"
         createdAt:
           type: string
           format: date-time
+          description: Fecha de creación del usuario
+          example: "2024-01-01T00:00:00Z"
         updatedAt:
           type: string
           format: date-time
-      example:
-        _id: "507f1f77bcf86cd799439011"
-        first_name: "Juan"
-        last_name: "Pérez"
-        email: "juan.perez@example.com"
-        role: "user"
-        pets: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
-        createdAt: "2023-12-01T10:00:00Z"
-        updatedAt: "2023-12-01T10:00:00Z"
+          description: Fecha de última actualización
+          example: "2024-01-15T10:30:00Z"
+
+    Document:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre original del documento
+          example: "dni_front.jpg"
+        reference:
+          type: string
+          description: Ruta donde se almacenó el documento
+          example: "/documents/user-507f1f77bcf86cd799439011-dni_front-1234567890.jpg"
+        type:
+          type: string
+          enum: ['identification', 'address', 'account', 'other']
+          description: Tipo de documento detectado automáticamente
+          example: "identification"
+        uploadDate:
+          type: string
+          format: date-time
+          description: Fecha de subida del documento
+          example: "2024-01-15T10:30:00Z"
+
+    Success:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Operation completed successfully
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: string
+          example: Error message description
+
+    ErrorValidation:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            details:
+              type: string
+              example: Validation failed for field X
+            suggestion:
+              type: string
+              example: Please check the format of the data
+
+    ErrorNotFound:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            requested_id:
+              type: string
+            suggestion:
+              type: string
+              example: Check available resources at GET /api/users
+
+    ErrorConflict:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            conflict_field:
+              type: string
+              example: email
+            existing_value:
+              type: string
+              example: existing@email.com
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: coderCookie
+      description: |
+        Autenticación mediante cookie JWT firmada.
+        
+        ### Cómo obtener:
+        1. Iniciar sesión en POST /api/sessions/login
+        2. La respuesta incluirá la cookie `coderCookie`
+        3. Incluir esta cookie en todas las solicitudes protegidas
+        
+        ### Características:
+        - HTTP Only (no accesible desde JavaScript)
+        - Firmada (signed)
+        - Expiración configurable (por defecto 1 hora)
+        - Solo enviada sobre HTTPS en producción

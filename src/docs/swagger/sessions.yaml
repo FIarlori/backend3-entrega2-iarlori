@@ -164,16 +164,42 @@ paths:
       tags:
         - Sessions
       summary: Iniciar sesión sin protección (solo desarrollo)
-      description: Endpoint de login sin cookie firmada (para desarrollo)
+      description: Endpoint de login sin cookie firmada (para desarrollo/testing)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "juan@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+              required:
+                - email
+                - password
       responses:
         '200':
           description: Login sin protección exitoso
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
         '400':
           description: Credenciales incorrectas
 
@@ -182,9 +208,19 @@ paths:
       tags:
         - Sessions
       summary: Usuario actual sin protección (solo desarrollo)
-      description: Endpoint para obtener usuario sin cookie firmada
+      description: Endpoint para obtener usuario sin cookie firmada para testing
       responses:
         '200':
-          description: Información obtenida
+          description: Información del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: object
         '401':
           description: No autenticado

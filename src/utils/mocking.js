@@ -1,10 +1,9 @@
-import bcrypt from 'bcrypt';
 import { faker } from '@faker-js/faker';
+import bcrypt from 'bcrypt';
 
 class Mocking {
     static async generateUsers(count = 50) {
         try {
-
             if (count < 0) {
                 throw new Error('Count cannot be negative');
             }
@@ -20,6 +19,9 @@ class Mocking {
                     password: encryptedPassword,
                     role: Math.random() > 0.5 ? 'user' : 'admin',
                     pets: [],
+                    documents: [],
+                    last_connection: new Date(),
+                    status: 'pending',
                     createdAt: new Date(),
                     updatedAt: new Date()
                 };
