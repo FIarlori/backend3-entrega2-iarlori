@@ -25,6 +25,9 @@ La imagen Docker está disponible públicamente en:
 ### Comandos Docker:
 
 ```bash
+# Docker Desktop
+Antes de ejecutar los comandos iniciar Docker Desktop
+
 # Descargar y ejecutar la imagen
 docker pull fi93/backend3-entrega-final:latest
 docker run -p 8080:8080 fi93/backend3-entrega-final:latest
