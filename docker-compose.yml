@@ -1,38 +1,14 @@
 version: '3.8'
 services:
-  mongodb:
-    image: mongo:6.0
-    container_name: backend3-mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    networks:
-      - backend-network
-
   app:
     build: .
     container_name: backend3-app
     ports:
       - "8080:8080"
     env_file:
-      - .env.docker
+      - .env
     volumes:
-      - ./src/public/img:/usr/src/app/src/public/img
-      - ./src/public/documents:/usr/src/app/src/public/documents
-      - ./src/logs:/usr/src/app/src/logs
-    depends_on:
-      - mongodb
-    networks:
-      - backend-network
+      - ./src/public/img:/app/src/public/img
+      - ./src/public/documents:/app/src/public/documents
+      - ./src/logs:/app/src/logs
     restart: unless-stopped
-
-networks:
-  backend-network:
-    driver: bridge
-
-volumes:
-  mongodb_data:

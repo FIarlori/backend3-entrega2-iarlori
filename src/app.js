@@ -6,12 +6,17 @@ import swaggerUi from 'swagger-ui-express';
 import { loggerMiddleware } from './middlewares/logger.middleware.js';
 import logger from './utils/logger.js';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { swaggerSpec } from './docs/swagger.js';
 import adoptionsRouter from './routes/adoption.router.js';
 import mocksRouter from './routes/mocks.router.js';
 import petsRouter from './routes/pets.router.js';
 import sessionsRouter from './routes/sessions.router.js';
 import usersRouter from './routes/users.router.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -30,7 +35,9 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.use(loggerMiddleware);
 
-app.use('/public', express.static('src/public'));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/documents', express.static(path.join(__dirname, 'public/documents')));
+app.use('/img', express.static(path.join(__dirname, 'public/img')));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   explorer: true,

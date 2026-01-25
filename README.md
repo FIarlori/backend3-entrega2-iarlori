@@ -20,7 +20,9 @@
 ## 🐳 Docker
 
 La imagen Docker está disponible públicamente en:  
+
 📦 **https://hub.docker.com/r/fi93/backend3-entrega-final**
+
 
 Antes de ejecutar los comandos, iniciar Docker Desktop
 
@@ -28,7 +30,6 @@ Dos formas de ejecutar con Docker:
 
 Opción A: Usar la imagen pre-construida de Docker Hub
 
-### Comandos Docker:
 
 ```bash
 # Descargar la imagen
@@ -73,17 +74,21 @@ Usar como referencia **.env.sample**.
 npm run dev
 ```
 
-### 5. Construir y ejecutar con docker
+### 5. Comandos Docker disponibles
+
 ```bash
+
+# Construir y ejecutar con docker-compose (Aplicación + MongoDB)
+npm run docker:compose
 
 # Construir imagen local
 npm run docker:build
 
-# Ejecutar contenedor
+# Ejecutar solo la aplicación (necesita MongoDB externo)
 npm run docker:run
 
-# Usar docker-compose (incluye MongoDB)
-npm run docker:compose
+# Parar contenedores
+npm run docker:down
 
 ```
 
@@ -213,6 +218,8 @@ backend3-entrega-final/
 
 ## 🔧 Configuración de Variables de Entorno
 
+- .env.sample
+
 ```
 PORT=8080
 NODE_ENV=development
@@ -222,6 +229,10 @@ COOKIE_SECRET=my_secret_cookie
 JWT_EXPIRES_IN=1h
 
 ```
+
+- Para desarrollo local usar ".env":
+
+- Con Docker usar ".env.docker":
 
 ---
 
