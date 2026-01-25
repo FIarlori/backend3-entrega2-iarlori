@@ -378,9 +378,7 @@ app.get('/', (req, res) => {
                     <div class="status-badge">
                         Entorno: ${NODE_ENV}
                     </div>
-                    <div class="status-badge">
-                        Total Endpoints: 28 (14 Auth / 14 No Auth)
-                    </div>
+
                 </header>
                 
                 <div class="content">
@@ -698,26 +696,6 @@ app.get('/', (req, res) => {
                     <p>🚀 Proyecto Dockerizado con Swagger Documentation y Testing Completo</p>
                     
                     <div class="stats">
-                        <div class="stat">
-                            <span class="stat-number">28</span>
-                            <span class="stat-label">Endpoints</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number">5</span>
-                            <span class="stat-label">Módulos</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number">${mongoose.connection.readyState === 1 ? '✅' : '❌'}</span>
-                            <span class="stat-label">MongoDB</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number">🐳</span>
-                            <span class="stat-label">Docker</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number">📚</span>
-                            <span class="stat-label">Swagger</span>
-                        </div>
                     </div>
                 </footer>
             </div>
