@@ -17,27 +17,32 @@
 
 ---
 
-## 🐳 Docker Image
+## 🐳 Docker
 
 La imagen Docker está disponible públicamente en:  
 📦 **https://hub.docker.com/r/fi93/backend3-entrega-final**
 
+Antes de ejecutar los comandos, iniciar Docker Desktop
+
+Dos formas de ejecutar con Docker:
+
+Opción A: Usar la imagen pre-construida de Docker Hub
+
 ### Comandos Docker:
 
 ```bash
-# Docker Desktop
-Antes de ejecutar los comandos iniciar Docker Desktop
-
-# Descargar y ejecutar la imagen
+# Descargar la imagen
 docker pull fi93/backend3-entrega-final:latest
-docker run -p 8080:8080 fi93/backend3-entrega-final:latest
 
-# O ejecutar con variables de entorno
+# Ejecutar la aplicación
 docker run -p 8080:8080 \
-  -e MONGO_URL=mongodb://host.docker.internal:27017/backend_coder \
-  -e JWT_SECRET=my_secret_jwt \
-  fi93/backend3-entrega-final
+  --env-file .env.docker \
+  fi93/backend3-entrega-final:latest
+```
 
+Opción B: Usar docker-compose local
+
+```bash
 # Levanta app + MongoDB
 docker-compose up
 
